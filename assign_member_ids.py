@@ -22,7 +22,7 @@ api_key = keyfile.readline().rstrip()
 keyfile.close()
 
 url = 'https://members-crm.piratenpartei.ch/wp-content/plugins/civicrm/civicrm/extern/rest.php'
-civicrm = CiviCRM(url, site_key, api_key, False)
+civicrm = CiviCRM(url, site_key, api_key, True)
 
 #download all memberships
 print('Downloading memberships...')
@@ -74,7 +74,7 @@ for contact in contacts:
 		if not(is_number(extid_string)):
 			extid = high_extid + 1
 			high_extid = extid
-			#civicrm.update('Contact', cid, external_identifier=extid)
+			civicrm.update('Contact', cid, external_identifier=str(extid))
 			print('Assiging member id ' + str(extid) + ' to contact ' + cid)
 
 print('Highest assigned member id is currently ' + str(high_extid))
