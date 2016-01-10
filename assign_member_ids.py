@@ -5,77 +5,40 @@
 # Assign member ids to new members
 #
 
+import sys
+import os
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
+from loader import load_all
 
-def is_number(s):
-    try:
-        int(s)
-        return True
-    except ValueError:
-        return False
-
-keyfile = open('keys', 'r')
-site_key = keyfile.readline().rstrip()
-api_key = keyfile.readline().rstrip()
-keyfile.close()
-
-url = 'https://members-crm.piratenpartei.ch/wp-content/plugins/civicrm/civicrm/extern/rest.php'
+site_key = os.environ['CIVI_SITE_KEY']
+api_key = os.environ['CIVI_API_KEY']
+url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
-#download all memberships
-print('Downloading memberships...')
-membership_count = civicrm.getcount('Membership')
-memberships = list()
-
-while len(memberships) < membership_count:
-	memberships_download = civicrm.get('Membership', limit=400, offset=len(memberships))
-	memberships.extend(memberships_download)
-	print('Got ' + str(len(memberships)) + ' of ' + str(membership_count) + ' memberships');
-print('Got all ' + str(len(memberships)) + ' memberships')
-
-#download all contacts
-print('Downloading contacts...')
-contact_count = civicrm.getcount('Contact')
-contacts = list()
-
-while len(contacts) < contact_count:
-	contacts_download = civicrm.get('Contact', limit=300, offset=len(contacts))
-	contacts.extend(contacts_download)
-	print('Got ' + str(len(contacts)) + ' of ' + str(contact_count) + ' contacts');
-print('Got all ' + str(len(contacts)) + ' contacts')
-
-#create list of all members (including former members)
-members = dict()
-for membership in memberships:
-	members[membership['contact_id']] = True;
-
-high_extid = 0
+members = load_all(civicrm, 1, 200)
 
 #run through all contacts and determine the current highest member id
 print('Determining highest current member id...');
-for contact in contacts:
-	cid = contact['id']
-	extid_string = contact['external_identifier']
-	if is_number(extid_string):
-		extid = int(extid_string)
-		if high_extid < extid:
-			high_extid = extid
+high_member_id = 0
+for member in members:
+	print('Current member id ' + str(member.member_id))
+	print('Highest member id ' + str(high_member_id))
+	if member.member_id > high_member_id:
+		high_member_id = member.member_id
 
-print('Highest assigned member id is currently ' + str(high_extid))
+print('Highest assigned member id is currently ' + str(high_member_id))
 
+exit
 #run through all contacts and assign new member ids where necessary
 print('Assigning new member ids...');
-for contact in contacts:
-	cid = contact['id']
-	extid_string = contact['external_identifier']
-	if cid in members:
-		if not(is_number(extid_string)):
-			extid = high_extid + 1
-			high_extid = extid
-			civicrm.update('Contact', cid, external_identifier=str(extid))
-			print('Assiging member id ' + str(extid) + ' to contact ' + cid)
+for member in members:
+	if len(member.memberships) > 0 and member.member_id < 1:
+		high_member_id = high_member_id + 1
+		member.member_id = str(high_member_id)
+		civicrm.update('Contact', str(member.civi_id), external_identifier=str(member.member_id))
+		print('Assiging member id ' + str(member.member_id) + ' to contact ' + str(member.civi_id))
 
-print('Highest assigned member id is currently ' + str(high_extid))
+print('Highest assigned member id is currently ' + str(high_member_id))
 
