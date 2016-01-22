@@ -19,6 +19,9 @@ api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
+with open(sys.argv[1]) as f:
+    memberlist = f.read().splitlines()
+
 members = load_all(civicrm, 1, 50, True)
 #members = load_persons(civicrm, first_name='Stefan', progress=1, batch=20, verification=True)
 
@@ -26,7 +29,7 @@ print('member,1.0')
 print('uuid,email,status,department,verified,registered')
 
 for member in members:
-	if len(member.memberships) > 0 and len(member.email) > 0:
+	if len(member.memberships) > 0 and len(member.email) > 0 and str(member.member_id) in memberlist:
 		mems = dict();
 		for membership in member.memberships:
 			mems[membership.name] = membership
