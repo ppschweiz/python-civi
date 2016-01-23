@@ -23,7 +23,12 @@ with open(sys.argv[1]) as f:
     memberlist = f.read().splitlines()
 
 #members = load_all(civicrm, 1, 50, True)
-members = load_persons(civicrm, first_name='Stefan', progress=1, batch=20, verification=True)
+
+members = list();
+for member_id in memberlist:
+	onemember = load_persons(civicrm, external_identifier=member_id, progress=1, batch=20, verification=True)
+	for member in onemember:
+		members.append(member)
 
 print('member,1.0')
 print('uuid,email,status,department,verified,registered')
