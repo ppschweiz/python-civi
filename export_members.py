@@ -43,10 +43,11 @@ for member in members:
 				del mems[membership.department.parent]
 		first = mems[mems.keys()[0]]
 		department = first.department.fullname
-		if first.active:
-			status = 'member'
-		else:
-			status = 'eligible'
+		#if first.active:
+		#	status = 'member'
+		#else:
+		#	status = 'eligible'
+		status = 'member'
 		sys.stdout.write(str(member.member_id) + ",")
 		sys.stdout.write(member.email + ",")
 		sys.stdout.write(status + ",")
