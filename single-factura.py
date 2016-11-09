@@ -12,6 +12,10 @@ from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from util import is_number
+from model import Person
+from model import Membership
+from factura import handle_member
+import datetime
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
@@ -19,19 +23,6 @@ url = os.environ['CIVI_API_URL']
 civicrm = CiviCRM(url, site_key, api_key, True)
 
 member_id = sys.argv[1]
-print("Member Id: " + member_id)
-contacts = civicrm.get('Contact', external_identifier=member_id)
-
-if len(contacts) == 1:
-	contact = contacts[0]
-	contact_id = contact['id']
-	print("Contact Id: " + contact_id)
-	print("Name: " + contact['sort_name'])
-	values = civicrm.get('CustomValue', entity_id=contact_id, id=7);
-
-	for value in values:
-		print(value)
-		if value['id'] == '7':
-			print("Accreditation: " + value['0'])
-else:
-	print("Contact not found.")
+person = Person(civicrm, member_id=member_id)
+handle_member(person)
+print("done");

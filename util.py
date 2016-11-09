@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Pirate Party Switzerland membership management script
 # Created by Stefan Thoeni at 2015-12-5

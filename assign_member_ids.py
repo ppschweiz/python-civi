@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # Pirate Party Switzerland membership management script
 # Created by Stefan Thoeni at 2015-12-5
@@ -30,7 +31,6 @@ for member in members:
 
 print('Highest assigned member id is currently ' + str(high_member_id))
 
-exit
 #run through all contacts and assign new member ids where necessary
 print('Assigning new member ids...');
 for member in members:
