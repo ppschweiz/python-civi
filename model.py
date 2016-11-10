@@ -10,6 +10,7 @@
 # * Rechnungsdatum: custom_17
 # * Mahnungsdatum: custom_18
 # * Zahlungsdatum: custom_19
+# * Mahnstufe: custom_20
 
 import sys
 import os
@@ -18,11 +19,12 @@ from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from util import is_number
 from util import parse_date
+from util import parse_int
 from departments import get_departments
 import datetime
 
 def get_required_fields():
-	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19'
+	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19,custom_20'
 
 class Person:
 	def __init__(self, civicrm, **kwargs):
@@ -106,6 +108,7 @@ class Person:
 		self.facturadate = parse_date(contact['custom_17'])
 		self.reminderdate = parse_date(contact['custom_18'])
 		self.paymentdate = parse_date(contact['custom_19'])
+		self.reminderlevel = parse_int(contact['custom_20'])
 
 	def update_facturadate(self, date):
 		self.facturadate = date
@@ -114,6 +117,10 @@ class Person:
 	def update_reminderdate(self, date):
 		self.reminderdate = date
 		self.civicrm.update('Contact', self.civi_id, custom_18=self.reminderdate)
+
+	def update_reminderlevel(self, level):
+		self.reminderlevel = level
+		self.civicrm.update('Contact', self.civi_id, custom_20=self.reminderlevel)
 
 class Membership:
 	def __init__(self, **kwargs):

@@ -26,11 +26,11 @@ api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
-def get_factura_ref(person, date):
-	return u'10000{:06d}{:04d}0'.format(person.member_id, date.year)
+def get_factura_ref(person, year):
+	return u'10000{:06d}{:04d}0'.format(person.member_id, year)
 
-def get_factura_number(person, date):
-	return u'{:04d}{:06d}'.format(date.year, person.member_id)
+def get_factura_number(person, year):
+	return u'{:04d}{:06d}'.format(year, person.member_id)
 
 def get_section_amount(person):
 	if person.section.amount > 0:
@@ -55,9 +55,14 @@ def format_message(person, date, filename):
 		template = Template(text)
 		return template.substitute(GREET=person.greeting)
 
-def create_factura(person, date, remind):
+def create_factura(person, date, reminderlevel):
+	if date.month == 12:
+		year = date.year + 1
+	else:
+		year = date.year
+
 	csv = open("people.csv", "w")
-	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, date), get_factura_number(person, date), get_factura_ref(person, date), format_date(person.language, date), date.year).encode('utf8'))
+	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, date), get_factura_number(person, date), get_factura_ref(person, date), format_date(person.language, date), year).encode('utf8'))
 	csv.close()
 
 	if person.language == 'fr_FR':
@@ -67,15 +72,19 @@ def create_factura(person, date, remind):
 	else:
 		language = 'de'
 
-	if remind:
-		mode = 'reminder'
-	else:
+	if reminderlevel == 0:
 		mode = 'bill'
+	elif reminderlevel == 1:
+		mode = 'reminder'
+	elif reminderlevel == 2:
+		mode = 'reminder2'
+	else:
+		mode = 'reminder3'
 
 	subprocess.call('./compile.sh ' + language + ' ' + mode, shell=True)
 
-def send_factura(person, date, remind, dryrun):
-	create_factura(person, date, remind)
+def send_factura(person, date, reminderlevel, dryrun):
+	create_factura(person, date, reminderlevel)
 
 	text = format_message(person, date, 'tmp/msg.txt')
 	html = format_message(person, date, 'tmp/msg.html')
@@ -95,18 +104,20 @@ def handle_member(person, dryrun):
 	now = datetime.datetime.now()
 	if now > (person.facturadate + datetime.timedelta(days=365)):
 		print(u'Member {} needs new factura'.format(person.member_id))
-		send_factura(person, now, False, dryrun)
+		send_factura(person, now, 0, dryrun)
 
 		if not dryrun:
 			person.update_facturadate(now)
 			person.update_reminderdate(now)
+			person.update_reminderlevel(0)
 
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
 		print(u'Member {} needs new reminder'.format(person.member_id))
-		send_factura(person, person.facturadate, True, dryrun)
+		send_factura(person, person.facturadate, person.reminderlevel + 1, dryrun)
 
 		if not dryrun:
 			person.update_reminderdate(now)
+			person.update_reminderlevel(person.reminderlevel + 1)
 
 def check_not_after():
 	subprocess.call('./not-after.sh', shell=True)

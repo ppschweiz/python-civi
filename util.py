@@ -21,6 +21,12 @@ def parse_date(datestring):
 	else:
 		return datetime.datetime.strptime(datestring, '%Y-%m-%d %H:%M:%S');
 
+def parse_int(intstring):
+	if intstring == '':
+		return 0
+	else:
+		return int(intstring)
+
 def trim(text):
 	return text.strip(' \n\t\r')
 
