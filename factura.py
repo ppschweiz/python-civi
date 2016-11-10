@@ -14,8 +14,11 @@ from pythoncivicrm.pythoncivicrm import matches_required
 import datetime
 from model import Person
 from model import Membership
+from util import parse_date
+from util import trim
 from string import Template
 from sendemail import send_email
+from sendemail import notify_admin
 import subprocess
 
 site_key = os.environ['CIVI_SITE_KEY']
@@ -71,12 +74,12 @@ def create_factura(person, date, remind):
 
 	subprocess.call('./compile.sh ' + language + ' ' + mode, shell=True)
 
-def send_factura(person, date, remind=False):
+def send_factura(person, date, remind, dryrun):
 	create_factura(person, date, remind)
 
 	text = format_message(person, date, 'tmp/msg.txt')
 	html = format_message(person, date, 'tmp/msg.html')
-	subject = format_message(person, date, 'tmp/msg.subject')
+	subject = trim(format_message(person, date, 'tmp/msg.subject'))
 	
 	if person.language == 'fr_FR':
 		attachmentname = "facture.pdf"
@@ -85,17 +88,34 @@ def send_factura(person, date, remind=False):
 	else:
 		attachmentname = "Rechnung.pdf"
 
-	send_email('info@piratenpartei.ch', person.email, subject, html, text, 'tmp/factura.pdf', attachmentname)
+	if not dryrun:
+		send_email('info@piratenpartei.ch', person.email, subject, html, text, 'tmp/factura.pdf', attachmentname)
 
-def handle_member(person):
+def handle_member(person, dryrun):
 	now = datetime.datetime.now()
 	if now > (person.facturadate + datetime.timedelta(days=365)):
 		print(u'Member {} needs new factura'.format(person.member_id))
-		send_factura(person, now, False)
-		person.update_facturadate(now)
-		person.update_reminderdate(now)
+		send_factura(person, now, False, dryrun)
+
+		if not dryrun:
+			person.update_facturadate(now)
+			person.update_reminderdate(now)
+
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
 		print(u'Member {} needs new reminder'.format(person.member_id))
-		send_factura(person, person.facturadate, True)
-		person.update_reminderdate(now)
+		send_factura(person, person.facturadate, True, dryrun)
 
+		if not dryrun:
+			person.update_reminderdate(now)
+
+def check_not_after():
+	subprocess.call('./not-after.sh', shell=True)
+	with open('not-after', "rb") as fil:
+		date = parse_date(trim(fil.read()))
+	subprocess.call('rm not-after', shell=True)
+	now = datetime.datetime.now()
+	if now > date:
+		notify_admin(u'Factura content expired', u'Factura content expired at {0}'.format(date))
+		return False
+	else:
+		return True

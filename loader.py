@@ -13,6 +13,7 @@ from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from model import Person
 from model import Membership
+from model import get_required_fields
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
@@ -44,6 +45,8 @@ def load(civicrm, entity_type, **kwargs):
 		batchfilter['limit']=batch
 		batchfilter['offset']=len(entities)
 		for key in kwargs:
+			if key == 'returnfields':
+				batchfilter['return'] = kwargs[key]
 			if key != 'memberships':
 				batchfilter[key] = kwargs[key]
 
@@ -81,5 +84,5 @@ def load_persons(civicrm, **kwargs):
 
 def load_all(civicrm, progress, batch, verification=False):
 	memberships = load_memberships(civicrm, progress=progress, batch=2*batch)
-	return load_persons(civicrm, progress=progress, batch=batch, verification=verification, memberships=memberships)
+	return load_persons(civicrm, progress=progress, batch=batch, verification=verification, memberships=memberships, returnfields=get_required_fields())
 

@@ -17,17 +17,12 @@ from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from util import is_number
+from util import parse_date
 from departments import get_departments
 import datetime
 
 def get_required_fields():
-	return 'external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19'
-
-def parse_date(datestring):
-	if datestring == '':
-		return datetime.datetime(2000, 1, 1, 0, 0)
-	else:
-		return datetime.datetime.strptime(datestring, '%Y-%m-%d %H:%M:%S');
+	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19'
 
 class Person:
 	def __init__(self, civicrm, **kwargs):
@@ -79,6 +74,7 @@ class Person:
 		else:
 			self.greeting = u'Hello ' + self.firstname
 
+
 		if 'memberships' in kwargs:
 			if kwargs['memberships'] != None:
 				self.memberships = list();
@@ -97,8 +93,11 @@ class Person:
 		self.section.fullname = ''
 		self.section.parent = None
 		self.section.amount = 0
+		self.isppsmember = False
 
 		for membership in self.memberships:
+			if membership.department.number == 2:
+				self.isppsmember = True
 			if membership.department.number > 2 and membership.department.amount > 0:
 				self.section = membership.department
 

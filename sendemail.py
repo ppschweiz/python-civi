@@ -28,8 +28,12 @@ def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None
 	alt.attach(MIMEText(bodytext, "plain"))
 	alt.attach(MIMEText(bodyhtml, "html"))
 
+	print(u'Sending mail {} to {} ...'.format(subject, destination))
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
 	s.starttls();
 	s.login(smtp_username, smtp_password);
 	s.sendmail(sender, destination, msg.as_string())
 	s.quit()
+
+def notify_admin(subject, text):
+	send_email('info@piratenpartei.ch', 'stefan.thoeni@piratenpartei.ch', subject, text.replace('<', '&lt;').replace(u'\n', u'<br/>'), text)
