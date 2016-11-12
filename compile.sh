@@ -50,7 +50,7 @@ then
 fi
 
 echo "Xelatex round 1..."
-xelatex -interaction nonstopmode -halt-on-error -file-line-error factura.tex &> /dev/null
+xelatex -interaction nonstopmode -halt-on-error -file-line-error factura.tex > /dev/null
 if [ $? -ne 0 ]
 then
   echo "Error in xelatex"

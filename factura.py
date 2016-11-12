@@ -8,22 +8,25 @@
 
 import sys
 import os
+import datetime
+import subprocess
+import hashlib
+from string import Template
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-import datetime
-from model import Person
-from model import Membership
 from util import parse_date
 from util import trim
-from string import Template
+from model import Person
+from model import Membership
 from sendemail import send_email
 from sendemail import notify_admin
-import subprocess
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
+paylink_base = os.environ['PAYLINK_BASE'] 
+paylink_secret = os.environ['PAYLINK_SECRET'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
 def get_factura_ref(person, year):
@@ -49,11 +52,19 @@ def format_date(language, date):
 	else:
 		return u'{:04d}-{:02d}-{:02d}'.format(date.year, date.month, date.day)
 
+def sha1(text):
+	h = hashlib.sha1()
+	h.update(text)
+	return h.hexdigest()
+
+def build_paylink(person):
+	return paylink_base + "/pay#" + sha1(paylink_secret + ":paylink/" + str(person.member_id))[:20] + "/" + str(person.member_id)
+
 def format_message(person, date, filename):
 	 with open(filename, "rb") as fil:
 		text = fil.read()
 		template = Template(text)
-		return template.substitute(GREET=person.greeting)
+		return template.substitute(GREET=person.greeting, PAYURL=build_paylink(person))
 
 def create_factura(person, date, reminderlevel):
 	if date.month == 12:
@@ -62,7 +73,7 @@ def create_factura(person, date, reminderlevel):
 		year = date.year
 
 	csv = open("people.csv", "w")
-	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, date), get_factura_number(person, date), get_factura_ref(person, date), format_date(person.language, date), year).encode('utf8'))
+	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, year), get_factura_number(person, year), get_factura_ref(person, year), format_date(person.language, date), year).encode('utf8'))
 	csv.close()
 
 	if person.language == 'fr_FR':
@@ -81,7 +92,7 @@ def create_factura(person, date, reminderlevel):
 	else:
 		mode = 'reminder3'
 
-	subprocess.call('./compile.sh ' + language + ' ' + mode, shell=True)
+	subprocess.check_call('./compile.sh ' + language + ' ' + mode, shell=True)
 
 def send_factura(person, date, reminderlevel, dryrun):
 	create_factura(person, date, reminderlevel)
@@ -120,7 +131,7 @@ def handle_member(person, dryrun):
 			person.update_reminderlevel(person.reminderlevel + 1)
 
 def check_not_after():
-	subprocess.call('./not-after.sh', shell=True)
+	subprocess.check_call('./not-after.sh', shell=True)
 	with open('not-after', "rb") as fil:
 		date = parse_date(trim(fil.read()))
 	subprocess.call('rm not-after', shell=True)
