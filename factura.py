@@ -28,6 +28,8 @@ url = os.environ['CIVI_API_URL']
 paylink_base = os.environ['PAYLINK_BASE'] 
 paylink_secret = os.environ['PAYLINK_SECRET'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
+sender_de = u'"Piratenpartei Schweiz" <info@piratenpartei.ch>'
+sender_fr = u'"Parti Pirate Suisse" <info@partipirate.ch>'
 
 def get_factura_ref(person, year):
 	return u'10000{:06d}{:04d}0'.format(person.member_id, year)
@@ -103,13 +105,18 @@ def send_factura(person, date, reminderlevel, dryrun):
 	
 	if person.language == 'fr_FR':
 		attachmentname = "facture.pdf"
+		sender = sender_fr
 	if person.language == "it_IT":	
 		attachmentname = "facture.pdf"
+		sender = sender_fr
 	else:
 		attachmentname = "Rechnung.pdf"
+		sender = sender_de
+
+	receipient = (u'"' + person.firstname + u' ' + person.lastname + u'" <' + person.email + u'>')
 
 	if not dryrun:
-		send_email('info@piratenpartei.ch', person.email, subject, html, text, 'tmp/factura.pdf', attachmentname)
+		send_email(sender, receipient, subject, html, text, 'tmp/factura.pdf', attachmentname)
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()

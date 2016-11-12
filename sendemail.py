@@ -13,8 +13,8 @@ smtp_password = os.environ['SMTP_PASSWORD']
 def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None, attachment_name=None):
 	msg = MIMEMultipart()
 	msg['Subject'] = subject
-	msg['From'] = sender
-	msg['To'] = destination
+	msg['From'] = sender.encode('latin-1')
+	msg['To'] = destination.encode('latin-1')
 
 	if attachment != None:
 		with open(attachment, "rb") as fil:
