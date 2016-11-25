@@ -13,7 +13,7 @@ from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from model import Person
 from model import Membership
-from model import get_required_fields
+from model import get_required_fields_person
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
@@ -83,6 +83,6 @@ def load_persons(civicrm, **kwargs):
 	return load(civicrm, 'Contact', **kwargs)
 
 def load_all(civicrm, progress, batch, verification=False):
-	memberships = load_memberships(civicrm, progress=progress, batch=2*batch)
-	return load_persons(civicrm, progress=progress, batch=batch, verification=verification, memberships=memberships, returnfields=get_required_fields())
+	memberships = load_memberships(civicrm, progress=progress, batch=batch/2*3)
+	return load_persons(civicrm, progress=progress, batch=batch, verification=verification, memberships=memberships, returnfields=get_required_fields_person())
 

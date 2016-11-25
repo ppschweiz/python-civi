@@ -18,12 +18,14 @@ from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from util import is_number
+from util import parse_datetime
 from util import parse_date
 from util import parse_int
 from departments import get_departments
 import datetime
+from updater import update_entity
 
-def get_required_fields():
+def get_required_fields_person():
 	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19,custom_20'
 
 class Person:
@@ -35,7 +37,7 @@ class Person:
 		elif 'member_id' in kwargs:
 			args = {}
 			args['external_identifier'] = kwargs['member_id']
-			args['return'] = get_required_fields()
+			args['return'] = get_required_fields_person()
 			contact = civicrm.get('Contact', **args)[0]
 		else:
 			raise ValueError('now loading argument stated')
@@ -85,7 +87,9 @@ class Person:
 						self.memberships.append(membership)
 		else:
 			self.memberships = list();
-			membership_values = civicrm.get('Membership', contact_id=self.civi_id)
+			args = {}
+			args['contact_id'] = self.civi_id
+			membership_values = civicrm.get('Membership', **args)
 			for membership_data in membership_values:
 				membership = Membership(data=membership_data)
 				self.memberships.append(membership)
@@ -96,31 +100,44 @@ class Person:
 		self.section.parent = None
 		self.section.amount = 0
 		self.isppsmember = False
+		self.joindate = None
 
 		for membership in self.memberships:
 			if membership.department.number == 2:
 				self.isppsmember = True
+				self.joindate = membership.joindate
 			if membership.department.number > 2 and membership.department.amount > 0:
 				self.section = membership.department
 
 		self.verified = (contact['custom_7'] == '1')
 
-		self.facturadate = parse_date(contact['custom_17'])
-		self.reminderdate = parse_date(contact['custom_18'])
-		self.paymentdate = parse_date(contact['custom_19'])
+		self.facturadate = parse_datetime(contact['custom_17'], datetime.datetime(2000, 1, 1))
+		self.reminderdate = parse_datetime(contact['custom_18'], datetime.datetime(2000, 1, 1))
+		self.paymentdate = parse_datetime(contact['custom_19'], datetime.datetime(2000, 1, 1))
 		self.reminderlevel = parse_int(contact['custom_20'])
 
 	def update_facturadate(self, date):
 		self.facturadate = date
-		self.civicrm.update('Contact', self.civi_id, custom_17=self.facturadate)
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_17=self.facturadate)
 
 	def update_reminderdate(self, date):
 		self.reminderdate = date
-		self.civicrm.update('Contact', self.civi_id, custom_18=self.reminderdate)
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_18=self.reminderdate)
 
 	def update_reminderlevel(self, level):
 		self.reminderlevel = level
-		self.civicrm.update('Contact', self.civi_id, custom_20=self.reminderlevel)
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_20=self.reminderlevel)	
+	def update_factura(self, facturadate, reminderdate, reminderlevel):
+		self.facturadate = facturadate
+		self.reminderdate = reminderdate
+		self.reminderlevel = reminderlevel
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_17=self.facturadate, custom_18=self.reminderdate, custom_20=self.reminderlevel)
+
+	def update_reminder(self, reminderdate, reminderlevel):
+		self.reminderdate = reminderdate
+		self.reminderlevel = reminderlevel
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_18=self.reminderdate, custom_20=self.reminderlevel)
+
 
 class Membership:
 	def __init__(self, **kwargs):
@@ -131,6 +148,7 @@ class Membership:
 
 		self.contact_id = int(data['contact_id']);
 		self.name = data['membership_name']
+		self.joindate = parse_date(data['join_date'], datetime.datetime(1990, 1, 1))
 
 		deps = get_departments()
 

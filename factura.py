@@ -3,7 +3,7 @@
 # Pirate Party Switzerland membership management script
 # Created by Stefan Thoeni at 2016-11-07
 #
-# Create factures for members
+# Create a factura for a member
 #
 
 import sys
@@ -15,7 +15,7 @@ from string import Template
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from util import parse_date
+from util import parse_datetime
 from util import trim
 from model import Person
 from model import Membership
@@ -30,6 +30,7 @@ paylink_secret = os.environ['PAYLINK_SECRET']
 civicrm = CiviCRM(url, site_key, api_key, True)
 sender_de = u'"Piratenpartei Schweiz" <info@piratenpartei.ch>'
 sender_fr = u'"Parti Pirate Suisse" <info@partipirate.ch>'
+registry = u'"Piratenpartei Schweiz" <registrar@piratenpartei.ch>'
 
 def get_factura_ref(person, year):
 	return u'10000{:06d}{:04d}0'.format(person.member_id, year)
@@ -117,6 +118,9 @@ def send_factura(person, date, reminderlevel, dryrun):
 
 	if not dryrun:
 		send_email(sender, receipient, subject, html, text, 'tmp/factura.pdf', attachmentname)
+		send_email(sender, registry, subject, html, text, 'tmp/factura.pdf', attachmentname)
+	else:
+		print('Not sending mail to ' + receipient + ' with subject ' + subject + ' due to dry run');
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()
@@ -125,22 +129,23 @@ def handle_member(person, dryrun):
 		send_factura(person, now, 0, dryrun)
 
 		if not dryrun:
-			person.update_facturadate(now)
-			person.update_reminderdate(now)
-			person.update_reminderlevel(0)
+			person.update_factura(now, now, 0)
+		else:
+			print('Not updating factura in dry run');
 
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
 		print(u'Member {} needs new reminder'.format(person.member_id))
 		send_factura(person, person.facturadate, person.reminderlevel + 1, dryrun)
 
 		if not dryrun:
-			person.update_reminderdate(now)
-			person.update_reminderlevel(person.reminderlevel + 1)
+			person.update_reminder(now, person.reminderlevel + 1)
+		else:
+			print('Not updating reminder in dry run');
 
 def check_not_after():
 	subprocess.check_call('./not-after.sh', shell=True)
 	with open('not-after', "rb") as fil:
-		date = parse_date(trim(fil.read()))
+		date = parse_datetime(trim(fil.read()), datetime.datetime(2000, 1, 1))
 	subprocess.call('rm not-after', shell=True)
 	now = datetime.datetime.now()
 	if now > date:

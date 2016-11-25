@@ -15,11 +15,17 @@ def is_number(s):
     except ValueError:
         return False
 
-def parse_date(datestring):
+def parse_datetime(datestring, default):
 	if datestring == '':
-		return datetime.datetime(2000, 1, 1, 0, 0)
+		return default
 	else:
 		return datetime.datetime.strptime(datestring, '%Y-%m-%d %H:%M:%S');
+
+def parse_date(datestring, default):
+	if datestring == '':
+		return default
+	else:
+		return datetime.datetime.strptime(datestring, '%Y-%m-%d');
 
 def parse_int(intstring):
 	if intstring == '':
