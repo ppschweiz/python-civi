@@ -13,6 +13,7 @@ from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from loader import load_all
 from loader import load_persons
+from model import get_required_fields_person
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
@@ -26,7 +27,7 @@ with open(sys.argv[1]) as f:
 
 members = list();
 for member_id in memberlist:
-	onemember = load_persons(civicrm, external_identifier=member_id, progress=1, batch=20, verification=True)
+	onemember = load_persons(civicrm, external_identifier=member_id, progress=1, batch=20, returnfields=get_required_fields_person())
 	for member in onemember:
 		members.append(member)
 
