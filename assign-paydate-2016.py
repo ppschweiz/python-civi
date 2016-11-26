@@ -37,7 +37,10 @@ members = load_all(civicrm, 1, 300)
 for member in members:
 	if member.isppsmember:
 		if member.member_id in payed:
+			member.update_paymentdate(payed[member.member_id])
 			lastfacdate = payed[member.member_id]  + datetime.timedelta(days=-62)
+		elif member.joindate.year == 2016 and member.member_id >= 4484:
+			lastfacdate = datetime.datetime(2010, 1, 1)
 		elif member.joindate.year == 2016:
 			lastfacdate = member.joindate + datetime.timedelta(days=-62)
 		else:

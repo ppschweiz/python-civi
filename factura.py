@@ -21,6 +21,7 @@ from model import Person
 from model import Membership
 from sendemail import send_email
 from sendemail import notify_admin
+from time import sleep
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
@@ -70,7 +71,7 @@ def format_message(person, date, filename):
 		return template.substitute(GREET=person.greeting, PAYURL=build_paylink(person))
 
 def create_factura(person, date, reminderlevel):
-	if date.month == 12:
+	if (date.month == 12) or (date.month == 11):
 		year = date.year + 1
 	else:
 		year = date.year
@@ -116,9 +117,9 @@ def send_factura(person, date, reminderlevel, dryrun):
 
 	receipient = (u'"' + person.firstname + u' ' + person.lastname + u'" <' + person.email + u'>')
 
+	send_email(sender, registry, subject, html, text, 'tmp/factura.pdf', attachmentname)
 	if not dryrun:
 		send_email(sender, receipient, subject, html, text, 'tmp/factura.pdf', attachmentname)
-		send_email(sender, registry, subject, html, text, 'tmp/factura.pdf', attachmentname)
 	else:
 		print('Not sending mail to ' + receipient + ' with subject ' + subject + ' due to dry run');
 
@@ -133,6 +134,8 @@ def handle_member(person, dryrun):
 		else:
 			print('Not updating factura in dry run');
 
+		sleep(60)
+
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
 		print(u'Member {} needs new reminder'.format(person.member_id))
 		send_factura(person, person.facturadate, person.reminderlevel + 1, dryrun)
@@ -141,6 +144,38 @@ def handle_member(person, dryrun):
 			person.update_reminder(now, person.reminderlevel + 1)
 		else:
 			print('Not updating reminder in dry run');
+
+		sleep(60)
+
+def update_membership(person, dryrun):
+	now = datetime.datetime.now()
+	#has pay current factura => shold be active
+	if person.paymentdate >= person.facturadate:
+		if not person.ppsmembership.active:
+			if not dryrun:
+				person.update_memberships(True, person.paymentdate, person.facturadate + datetime.timedelta(days=425))
+				print('Activated already payed memberships for person id ' + str(person.member_id))
+			else:
+				print('Not activating already payed memberships for person id ' + str(person.member_id) + ' in dryrun')
+
+	# payment in the last year and current factura not yet 60 days old => should be active
+	elif (person.paymentdate >= person.facturadate + datetime.timedelta(days=-365)) and (now < person.facturadate + datetime.timedelta(days=60)):
+		if not person.ppsmembership.active:
+			if not dryrun:
+				person.update_memberships(True, person.paymentdate, person.facturadate + datetime.timedelta(days=60))
+				print('Activated not yet expired memberships for person id ' + str(person.member_id))
+			else:
+				print('Not activating not yet expired memberships for person id ' + str(person.member_id) + ' in dryrun')
+
+	# other cases => should be inactive
+	else:
+		if person.ppsmembership.active:
+			if not dryrun:
+				person.update_memberships(False, person.paymentdate, person.facturadate + datetime.timedelta(days=60))
+				print('Deactivated epxired memberships for person id ' + str(person.member_id))
+			else:
+				print('Not deactivating epxired memberships for person id ' + str(person.member_id) + ' in dryrun')
+
 
 def check_not_after():
 	subprocess.check_call('./not-after.sh', shell=True)

@@ -10,5 +10,6 @@ import sys
 import os
 from facturer import process_facturas
 
-process_facturas();
+argument = sys.argv[1]
+process_facturas(argument != 'HOT');
 print("done");

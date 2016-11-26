@@ -29,7 +29,6 @@ def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None
 	alt.attach(MIMEText(bodyhtml, "html"))
 
 	print(u'Sending mail {} to {} ...'.format(subject, destination))
-	#raise Error('oops!')
 
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
 	s.starttls();

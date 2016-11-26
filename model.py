@@ -91,7 +91,7 @@ class Person:
 			args['contact_id'] = self.civi_id
 			membership_values = civicrm.get('Membership', **args)
 			for membership_data in membership_values:
-				membership = Membership(data=membership_data)
+				membership = Membership(civicrm, data=membership_data)
 				self.memberships.append(membership)
 
 		self.section = type('Department', (), {})()
@@ -100,11 +100,13 @@ class Person:
 		self.section.parent = None
 		self.section.amount = 0
 		self.isppsmember = False
+		self.ppsmembership = None
 		self.joindate = None
 
 		for membership in self.memberships:
 			if membership.department.number == 2:
 				self.isppsmember = True
+				self.ppsmembership = membership
 				self.joindate = membership.joindate
 			if membership.department.number > 2 and membership.department.amount > 0:
 				self.section = membership.department
@@ -115,6 +117,10 @@ class Person:
 		self.reminderdate = parse_datetime(contact['custom_18'], datetime.datetime(2000, 1, 1))
 		self.paymentdate = parse_datetime(contact['custom_19'], datetime.datetime(2000, 1, 1))
 		self.reminderlevel = parse_int(contact['custom_20'])
+
+	def update_paymentdate(self, date):
+		self.paymentdate = date
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_19=self.paymentdate)
 
 	def update_facturadate(self, date):
 		self.facturadate = date
@@ -138,17 +144,31 @@ class Person:
 		self.reminderlevel = reminderlevel
 		update_entity(self.civicrm, 'Contact', self.civi_id, custom_18=self.reminderdate, custom_20=self.reminderlevel)
 
+	def update_memberships(self, active, start, end):
+		for membership in self.memberships:
+			membership.update(active, start, end)
+
+#
+# Membership 'PPZS', id=2
+# 
+# Membership status_id:
+# - Pirate (bezahlt): 2
+# - Mitglied (nicht bezahlt): 4
+#
 
 class Membership:
-	def __init__(self, **kwargs):
+	def __init__(self, civicrm, **kwargs):
 		if 'data' in kwargs:
 			data = kwargs['data']
 		else:
 			raise ValueError('no data provided')
 
+		self.civicrm = civicrm
+		self.civi_id = int(data['id']);
 		self.contact_id = int(data['contact_id']);
 		self.name = data['membership_name']
 		self.joindate = parse_date(data['join_date'], datetime.datetime(1990, 1, 1))
+		self.active = (data['status_id'] == '2')
 
 		deps = get_departments()
 
@@ -158,8 +178,13 @@ class Membership:
 			sys.stderr.write('Unknown department: ' + self.name + "\n")
 			self.department = None
 
-		if data['status_id'] == 2:
-			self.active = True
+	def update(self, setactive, start, end):
+		self.active = setactive
+
+		if self.active:
+			status = '2'
 		else:
-			self.active = False
+			status = '4'
+
+		update_entity(self.civicrm, 'Membership', self.civi_id, is_override='1', status_id=status, start_date=start, end_date=end) 
 

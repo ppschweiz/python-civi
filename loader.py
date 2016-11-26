@@ -64,7 +64,7 @@ def load(civicrm, entity_type, **kwargs):
 				else:
 					entities.append(Person(civicrm, contact=data, verification=verification))
 			elif entity_type == 'Membership':
-				entities.append(Membership(data=data))
+				entities.append(Membership(civicrm, data=data))
 			else:
 				raise ValueError('unknown entity type')
 
