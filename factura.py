@@ -121,12 +121,12 @@ def send_factura(person, date, reminderlevel, dryrun):
 	if not dryrun:
 		send_email(sender, receipient, subject, html, text, 'tmp/factura.pdf', attachmentname)
 	else:
-		print('Not sending mail to ' + receipient + ' with subject ' + subject + ' due to dry run');
+		print('Not sending mail due to dry run');
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()
 	if now > (person.facturadate + datetime.timedelta(days=365)):
-		print(u'Member {} needs new factura'.format(person.member_id))
+		print('Member {} needs new factura'.format(person.member_id))
 		send_factura(person, now, 0, dryrun)
 
 		if not dryrun:
@@ -137,7 +137,7 @@ def handle_member(person, dryrun):
 		sleep(60)
 
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
-		print(u'Member {} needs new reminder'.format(person.member_id))
+		print('Member {} needs new reminder'.format(person.member_id))
 		send_factura(person, person.facturadate, person.reminderlevel + 1, dryrun)
 
 		if not dryrun:

@@ -28,7 +28,7 @@ def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None
 	alt.attach(MIMEText(bodytext.encode('latin-1'), "plain"))
 	alt.attach(MIMEText(bodyhtml.encode('latin-1'), "html"))
 
-	print(u'Sending mail {} to {} ...'.format(subject, destination))
+	print('Sending mail...')
 
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
 	s.starttls();

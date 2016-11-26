@@ -29,9 +29,9 @@ def update_memberships(members, dryrun):
 			try:
 				update_membership(member, dryrun)
 			except Exception as e:
-				msg = u'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
+				msg = 'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
 				print(msg)
-				notify_admin(u'Error in update_membership', msg)
+				notify_admin('Error in update_membership', msg)
 
 def process_facturas(dryrun):
 	try:
@@ -44,15 +44,15 @@ def process_facturas(dryrun):
 					try:
 						handle_member(member, dryrun)
 					except Exception as e:
-						msg = u'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
+						msg = 'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
 						print(msg)
-						notify_admin(u'Error in handle_member', msg)
+						notify_admin('Error in handle_member', msg)
 
 		update_memberships(members, dryrun)
 
 	except Exception as e:
-		msg = u'{}\n{}'.format(type(e), e)
+		msg = '{}\n{}'.format(type(e), e)
 		print(msg)
-		notify_admin(u'Error in process_factura', msg)
+		notify_admin('Error in process_factura', msg)
 
 
