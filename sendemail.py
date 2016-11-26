@@ -25,8 +25,8 @@ def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None
 	alt = MIMEMultipart('alternative')
 	msg.attach(alt)
 
-	alt.attach(MIMEText(bodytext, "plain"))
-	alt.attach(MIMEText(bodyhtml, "html"))
+	alt.attach(MIMEText(bodytext.encode('latin-1'), "plain"))
+	alt.attach(MIMEText(bodyhtml.encode('latin-1'), "html"))
 
 	print(u'Sending mail {} to {} ...'.format(subject, destination))
 
@@ -37,4 +37,4 @@ def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None
 	s.quit()
 
 def notify_admin(subject, text):
-	send_email('info@piratenpartei.ch', 'stefan.thoeni@piratenpartei.ch', subject, text.replace('<', '&lt;').replace(u'\n', u'<br/>'), text)
+	send_email(u'info@piratenpartei.ch', u'stefan.thoeni@piratenpartei.ch', subject, text.replace(u'<', u'&lt;').replace(u'\n', u'<br/>'), text)
