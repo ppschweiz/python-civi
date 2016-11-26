@@ -47,19 +47,18 @@ def process_stats():
 			except Exception as e:
 				msg = u'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
 				print(msg)
-				notify_admin(u'Error in handle_member', msg)
+				notify_admin(u'Error in process stats loop', msg)
 
 		msg = u''
 		for name in stats:
 			line = u'{}: {} Mitglieder, {} Stimmberechtigte, {} Akkreditierte\n'.format(name, stats[name].members, stats[name].voting, stats[name].verified)
 			msg += line
 	
-		print(msg)	
 		send_email(u'info@piratenpartei.ch', u'stefan.thoeni@piratenpartei.ch', u'Mitgliederstatstik', msg.replace(u'\n', u'<br/>'), msg)
 
 	except Exception as e:
 		msg = u'{}\n{}'.format(type(e), e)
 		print(msg)
-		notify_admin(u'Error in process_factura', msg)
+		notify_admin(u'Error in process_stats', msg)
 
 
