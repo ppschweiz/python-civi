@@ -15,6 +15,9 @@ from loader import load_all
 from loader import load_persons
 from model import get_required_fields_person
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 

@@ -13,6 +13,9 @@ from departments import get_departments
 def get_number(dep):
 	return dep.number
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 deps = get_departments()
 
 sys.stdout.write(u'department,1.0\n')
