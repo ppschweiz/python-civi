@@ -23,12 +23,22 @@ api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
+def update_memberships(members, dryrun):
+	for member in members:
+		if member.isppsmember:
+			try:
+				update_membership(member, dryrun)
+			except Exception as e:
+				msg = u'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
+				print(msg)
+				notify_admin(u'Error in update_membership', msg)
+
 def process_facturas(dryrun):
 	try:
 		members = load_all(civicrm, 1, 200)
 		assign_member_ids(members, dryrun)
 	
-		if check_not_after() or True:
+		if check_not_after():
 			for member in members:
 				if member.isppsmember:
 					try:
@@ -38,16 +48,11 @@ def process_facturas(dryrun):
 						print(msg)
 						notify_admin(u'Error in handle_member', msg)
 
-		for member in members:
-			if member.isppsmember:
-				try:
-					update_membership(member, dryrun)
-				except Exception as e:
-					msg = u'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
-					print(msg)
-					notify_admin(u'Error in update_membership', msg)
+		update_memberships(members, dryrun)
+
 	except Exception as e:
 		msg = u'{}\n{}'.format(type(e), e)
 		print(msg)
 		notify_admin(u'Error in process_factura', msg)
+
 
