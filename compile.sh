@@ -1,51 +1,45 @@
 #!/bin/bash
 
 CURDIR="$(pwd)"
-TARDIR="$CURDIR/tmp/"
-TMPDIR="/tmp/tex-compile"
+TMPDIR='/tmp'
+TARGETDIR="$TMPDIR/factura"
+COMPILEDIR="$TMPDIR/compile"
+CONTENTDIR="$TMPDIR/factura-content"
 
-rm -rf $TMPDIR &> /dev/null
+rm -rf $COMPILEDIR &> /dev/null
 
-mkdir $TMPDIR &> /dev/null
+mkdir $COMPILEDIR &> /dev/null
 if [ $? -ne 0 ]
 then
-  echo "Error creating $TMPDIR"
+  echo "Error creating $COMPILEDIR"
   exit 1
 fi
 
-cp people.csv $TMPDIR/
+cd $COMPILEDIR/
 if [ $? -ne 0 ]
 then
-  echo "Error copying peole.csv"
-  exit 2
-fi
-
-cd $TMPDIR/
-if [ $? -ne 0 ]
-then
-  echo "Error changing to $TMPDIR"
+  echo "Error changing to $COMPILEDIR"
   exit 3
 fi
 
-echo "Cloning factura content git..."
-git clone https://github.com/ppschweiz/factura-content &> /dev/null
-if [ $? -ne 0 ]
-then
-  echo "Error cloning factura-content"
-  exit 4
-fi
-
-cp factura-content/*.* .
+cp $CONTENTDIR/*.* .
 if [ $? -ne 0 ]
 then
   echo "Error copying factura-content"
   exit 5
 fi
 
-cp factura-content/$1/factura.tex .
+cp $CONTENTDIR/$1/factura.tex .
 if [ $? -ne 0 ]
 then
   echo "Error copying language specific factura"
+  exit 6
+fi
+
+cp $TARGETDIR/people.csv .
+if [ $? -ne 0 ]
+then
+  echo "Error copying member data for factura"
   exit 6
 fi
 
@@ -65,41 +59,11 @@ then
   exit 8
 fi
 
-rm -rf $TARDIR &> /dev/null
-
-mkdir $TARDIR &> /dev/null
-if [ $? -ne 0 ]
-then
-  echo "Error creating $TARDIR"
-  exit 9
-fi
-
-cp factura.pdf $TARDIR/
+cp factura.pdf $TARGETDIR/
 if [ $? -ne 0 ]
 then
   echo "Error copying factura.pdf"
   exit 10
-fi
-
-cp factura-content/$1/$2.txt $TARDIR/msg.txt
-if [ $? -ne 0 ]
-then
-  echo "Error copying msg.txt"
-  exit 11
-fi
-
-cp factura-content/$1/$2.html $TARDIR/msg.html
-if [ $? -ne 0 ]
-then
-  echo "Error copying msg.html"
-  exit 12
-fi
-
-cp factura-content/$1/$2.subject $TARDIR/msg.subject
-if [ $? -ne 0 ]
-then
-  echo "Error copying msg.subject"
-  exit 13
 fi
 
 cd $CURDIR/

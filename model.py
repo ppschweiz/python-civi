@@ -118,6 +118,16 @@ class Person:
 		self.paymentdate = parse_datetime(contact['custom_19'], datetime.datetime(2000, 1, 1))
 		self.reminderlevel = parse_int(contact['custom_20'])
 
+	def short_language(self):
+		if self.language == 'fr_FR':
+			return 'fr'
+		elif self.language == "it_IT":	
+			return 'it'
+		elif self.language == "en_UK":	
+			return 'en'
+		else:
+			return 'de'
+
 	def update_paymentdate(self, date):
 		self.paymentdate = date
 		update_entity(self.civicrm, 'Contact', self.civi_id, custom_19=self.paymentdate)

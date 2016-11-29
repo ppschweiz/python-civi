@@ -1,17 +1,10 @@
 #!/bin/bash
 
 CURDIR="$(pwd)"
-TARDIR="$CURDIR/tmp/"
-TMPDIR="/tmp/tex-compile"
+TMPDIR='/tmp'
+CONTENTDIR="$TMPDIR/factura-content"
 
-rm -rf $TMPDIR &> /dev/null
-
-mkdir $TMPDIR &> /dev/null
-if [ $? -ne 0 ]
-then
-  echo "Error creating $TMPDIR"
-  exit 1
-fi
+rm -rf $CONTENTDIR &> /dev/null
 
 cd $TMPDIR/
 if [ $? -ne 0 ]
@@ -28,18 +21,11 @@ then
   exit 4
 fi
 
-cp factura-content/not-after $CURDIR/ &> /dev/null 
-if [ $? -ne 0 ]
-then
-  echo "Error copying not-after"
-  exit 5
-fi
-
 cd $CURDIR/
 if [ $? -ne 0 ]
 then
   echo "Error changing to $CURDIR"
-  exit 6
+  exit 14
 fi
 
 exit 0

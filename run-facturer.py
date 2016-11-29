@@ -10,6 +10,8 @@ import sys
 import os
 from facturer import process_facturas
 
-argument = sys.argv[1]
-process_facturas(argument != 'HOT');
+if len(sys.argv) >= 2 and (sys.argv[1] == 'HOT'):
+	process_facturas(False)
+else:
+	process_facturas(True)
 print("done");

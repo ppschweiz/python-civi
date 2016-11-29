@@ -13,6 +13,8 @@ from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from loader import load_all
 from updater import update_entity
+from messages import send_message
+from sendemail import notify_admin
 
 def assign_member_ids(members, dryrun):
 	#run through all contacts and determine the current highest member id
@@ -37,6 +39,8 @@ def assign_member_ids(members, dryrun):
 				print('Assiging member id ' + str(member.member_id) + ' to contact ' + str(member.civi_id))
 			else:
 				print('Not assiging member id ' + str(member.member_id) + ' to contact ' + str(member.civi_id) + ' in dryrun')
+
+			send_message(member, 'welcome', dryrun)
 
 	print('Highest assigned member id is currently ' + str(high_member_id))
 

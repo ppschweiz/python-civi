@@ -19,19 +19,15 @@ from util import parse_datetime
 from util import trim
 from model import Person
 from model import Membership
-from sendemail import send_email
 from sendemail import notify_admin
+from messages import send_message
 from time import sleep
+from files import get_text
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
-paylink_base = os.environ['PAYLINK_BASE'] 
-paylink_secret = os.environ['PAYLINK_SECRET'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
-sender_de = u'"Piratenpartei Schweiz" <info@piratenpartei.ch>'
-sender_fr = u'"Parti Pirate Suisse" <info@partipirate.ch>'
-registry = u'"Piratenpartei Schweiz" <registrar@piratenpartei.ch>'
 
 def get_factura_ref(person, year):
 	return u'10000{:06d}{:04d}0'.format(person.member_id, year)
@@ -56,27 +52,15 @@ def format_date(language, date):
 	else:
 		return u'{:04d}-{:02d}-{:02d}'.format(date.year, date.month, date.day)
 
-def sha1(text):
-	h = hashlib.sha1()
-	h.update(text)
-	return h.hexdigest()
-
-def build_paylink(person):
-	return paylink_base + "/pay#" + sha1(paylink_secret + ":paylink/" + str(person.member_id))[:20] + "/" + str(person.member_id)
-
-def format_message(person, date, filename):
-	 with open(filename, "rb") as fil:
-		text = fil.read()
-		template = Template(text)
-		return template.substitute(GREET=person.greeting, PAYURL=build_paylink(person))
-
-def create_factura(person, date, reminderlevel):
+def create_factura(person, date):
+	subprocess.check_call('./prepare.sh', shell=True)
+	
 	if (date.month == 12) or (date.month == 11):
 		year = date.year + 1
 	else:
 		year = date.year
 
-	csv = open("people.csv", "w")
+	csv = open("/tmp/factura/people.csv", "w")
 	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, year), get_factura_number(person, year), get_factura_ref(person, year), format_date(person.language, date), year).encode('utf8'))
 	csv.close()
 
@@ -87,6 +71,11 @@ def create_factura(person, date, reminderlevel):
 	else:
 		language = 'de'
 
+	subprocess.check_call('./compile.sh ' + language, shell=True)
+
+def send_factura(person, date, reminderlevel, dryrun):
+	create_factura(person, date)
+	
 	if reminderlevel == 0:
 		mode = 'bill'
 	elif reminderlevel == 1:
@@ -95,37 +84,19 @@ def create_factura(person, date, reminderlevel):
 		mode = 'reminder2'
 	else:
 		mode = 'reminder3'
-
-	subprocess.check_call('./compile.sh ' + language + ' ' + mode, shell=True)
-
-def send_factura(person, date, reminderlevel, dryrun):
-	create_factura(person, date, reminderlevel)
-
-	text = format_message(person, date, 'tmp/msg.txt')
-	html = format_message(person, date, 'tmp/msg.html')
-	subject = trim(format_message(person, date, 'tmp/msg.subject'))
 	
 	if person.language == 'fr_FR':
 		attachmentname = "facture.pdf"
-		sender = sender_fr
 	if person.language == "it_IT":	
 		attachmentname = "facture.pdf"
-		sender = sender_fr
 	else:
 		attachmentname = "Rechnung.pdf"
-		sender = sender_de
 
-	receipient = (u'"' + person.firstname + u' ' + person.lastname + u'" <' + person.email + u'>')
-
-	send_email(sender, registry, subject, html, text, 'tmp/factura.pdf', attachmentname)
-	if not dryrun:
-		send_email(sender, receipient, subject, html, text, 'tmp/factura.pdf', attachmentname)
-	else:
-		print('Not sending mail due to dry run');
+	send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname)
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()
-	if now > (person.facturadate + datetime.timedelta(days=365)):
+	if (now > (person.facturadate + datetime.timedelta(days=365))) and (now > (person.joindate + datetime.timedelta(hours=23))):
 		print('Member {} needs new factura'.format(person.member_id))
 		send_factura(person, now, 0, dryrun)
 
@@ -176,15 +147,3 @@ def update_membership(person, dryrun):
 			else:
 				print('Not deactivating epxired memberships for person id ' + str(person.member_id) + ' in dryrun')
 
-
-def check_not_after():
-	subprocess.check_call('./not-after.sh', shell=True)
-	with open('not-after', "rb") as fil:
-		date = parse_datetime(trim(fil.read()), datetime.datetime(2000, 1, 1))
-	subprocess.call('rm not-after', shell=True)
-	now = datetime.datetime.now()
-	if now > date:
-		notify_admin(u'Factura content expired', u'Factura content expired at {0}'.format(date))
-		return False
-	else:
-		return True

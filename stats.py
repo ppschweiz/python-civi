@@ -14,6 +14,7 @@ from pythoncivicrm.pythoncivicrm import matches_required
 from loader import load_all
 from sendemail import send_email
 from sendemail import notify_admin
+from errors import handle_error
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
@@ -45,9 +46,7 @@ def process_stats():
 						stats[name].verified += 1
 
 			except Exception as e:
-				msg = 'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
-				print(msg)
-				notify_admin(u'Error in process stats loop', msg)
+				handle_error(e, 'MemberId: ' + str(member.member_id))
 
 		msg = u''
 		for name in stats:
@@ -57,8 +56,6 @@ def process_stats():
 		send_email(u'info@piratenpartei.ch', u'stefan.thoeni@piratenpartei.ch', u'Mitgliederstatstik', msg.replace(u'\n', u'<br/>'), msg)
 
 	except Exception as e:
-		msg = '{}\n{}'.format(type(e), e)
-		print(msg)
-		notify_admin(u'Error in process_stats', msg)
+		handle_error(e)
 
 

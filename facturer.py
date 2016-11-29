@@ -13,10 +13,12 @@ from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from loader import load_all
 from factura import handle_member
-from factura import check_not_after
+from files import check_not_after
+from files import checkout_content
 from sendemail import notify_admin
 from memberids import assign_member_ids
 from factura import update_membership
+from errors import handle_error
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
@@ -29,12 +31,12 @@ def update_memberships(members, dryrun):
 			try:
 				update_membership(member, dryrun)
 			except Exception as e:
-				msg = 'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
-				print(msg)
-				notify_admin('Error in update_membership', msg)
+				handle_error(e, 'MemberId: ' + str(member.member_id))
 
 def process_facturas(dryrun):
 	try:
+		checkout_content()
+
 		members = load_all(civicrm, 1, 200)
 		assign_member_ids(members, dryrun)
 	
@@ -44,15 +46,11 @@ def process_facturas(dryrun):
 					try:
 						handle_member(member, dryrun)
 					except Exception as e:
-						msg = 'MemberId: {}\n{}\n{}'.format(member.member_id, type(e), e)
-						print(msg)
-						notify_admin('Error in handle_member', msg)
+						handle_error(e, 'MemberId: ' + str(member.member_id))
 
 		update_memberships(members, dryrun)
 
 	except Exception as e:
-		msg = '{}\n{}'.format(type(e), e)
-		print(msg)
-		notify_admin('Error in process_factura', msg)
+		handle_error(e)
 
 
