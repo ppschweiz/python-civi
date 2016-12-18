@@ -24,5 +24,10 @@ civicrm = CiviCRM(url, site_key, api_key, True)
 
 member_id = sys.argv[1]
 person = Person(civicrm, member_id=member_id)
-handle_member(person, False)
+
+if len(sys.argv) >= 3 and (sys.argv[2] == 'HOT'):
+	handle_member(person, False)
+else:
+	handle_member(person, True)
+
 print("done");

@@ -25,8 +25,8 @@ def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None
 	alt = MIMEMultipart('alternative')
 	msg.attach(alt)
 
-	alt.attach(MIMEText(bodytext.encode('latin-1'), "plain"))
-	alt.attach(MIMEText(bodyhtml.encode('latin-1'), "html"))
+	alt.attach(MIMEText(bodytext, 'plain', 'utf-8'))
+	alt.attach(MIMEText(bodyhtml, 'html', 'utf-8'))
 
 	print('Sending mail...')
 
