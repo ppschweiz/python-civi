@@ -45,12 +45,13 @@ def process_facturas(dryrun):
 			print('Checking all members for pending facturas')
 			for member in members:
 				if member.isppsmember:
-					try:
-						handle_member(member, dryrun)
-					except Exception as e:
-						handle_error(e, 'MemberId: ' + str(member.member_id))
+					print('Member ID: ' + str(member.member_id))
+					#try:
+						#handle_member(member, dryrun)
+					#except Exception as e:
+						#handle_error(e, 'MemberId: ' + str(member.member_id))
 
-		update_memberships(members, dryrun)
+		#update_memberships(members, dryrun)
 
 	except Exception as e:
 		handle_error(e)
