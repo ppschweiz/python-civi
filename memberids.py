@@ -21,7 +21,7 @@ def assign_member_ids(members, dryrun):
 	print('Determining highest current member id...');
 	high_member_id = 0
 	for member in members:
-		print('Hightest ' + str(high_member_id) + ', this: '+ str(member.member_id))
+		print('Highest: ' + str(high_member_id) + ', this: '+ str(member.member_id))
 		if member.member_id > high_member_id:
 			high_member_id = member.member_id
 

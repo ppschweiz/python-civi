@@ -45,9 +45,9 @@ def get_total_amount(person):
 	return str(person.section.amount + 80) + '.00'
 
 def format_date(language, date):
-	if language == 'de_CH':
+	if language == 'de':
 		return u'{}. {} {:04d}'.format(date.day, date.strftime('%B'), date.year)
-	elif language == 'fr_FR':
+	elif language == 'fr':
 		return u'{} {} {:04d}'.format(date.day, date.strftime('%B'), date.year)
 	else:
 		return u'{:04d}-{:02d}-{:02d}'.format(date.year, date.month, date.day)
@@ -61,17 +61,10 @@ def create_factura(person, date):
 		year = date.year
 
 	csv = open("/tmp/factura/people.csv", "w")
-	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, year), get_factura_number(person, year), get_factura_ref(person, year), format_date(person.language, date), year).encode('utf8'))
+	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, year), get_factura_number(person, year), get_factura_ref(person, year), format_date(person.short_language(), date), year).encode('utf8'))
 	csv.close()
 
-	if person.language == 'fr_FR':
-		language = 'fr'
-	if person.language == "it_IT":	
-		language = 'fr'
-	else:
-		language = 'de'
-
-	subprocess.check_call('./compile.sh ' + language, shell=True)
+	subprocess.check_call('./compile.sh ' + person.short_language(), shell=True)
 
 def send_factura(person, date, reminderlevel, dryrun):
 	create_factura(person, date)
@@ -85,12 +78,14 @@ def send_factura(person, date, reminderlevel, dryrun):
 	else:
 		mode = 'reminder3'
 	
-	if person.language == 'fr_FR':
-		attachmentname = "facture.pdf"
-	if person.language == "it_IT":	
-		attachmentname = "facture.pdf"
+	if person.short_language() == 'fr':
+		attachmentname = 'facture.pdf'
+	if person.short_language() == 'it':	
+		attachmentname = 'facture.pdf'
+	if person.short_language() == 'en':	
+		attachmentname = 'bill.pdf'
 	else:
-		attachmentname = "Rechnung.pdf"
+		attachmentname = 'Rechnung.pdf'
 
 	send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname)
 

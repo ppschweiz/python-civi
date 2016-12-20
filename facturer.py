@@ -40,7 +40,7 @@ def process_facturas(dryrun):
 		members = load_all(civicrm, 1, 200)
 		assign_member_ids(members, dryrun)
 	
-		if check_not_after():
+		if False and check_not_after():
 			for member in members:
 				if member.isppsmember:
 					try:
@@ -48,7 +48,7 @@ def process_facturas(dryrun):
 					except Exception as e:
 						handle_error(e, 'MemberId: ' + str(member.member_id))
 
-		update_memberships(members, dryrun)
+		#update_memberships(members, dryrun)
 
 	except Exception as e:
 		handle_error(e)
