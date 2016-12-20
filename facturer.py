@@ -52,7 +52,7 @@ def process_facturas(dryrun):
 						handle_error(e, 'MemberId: ' + str(member.member_id))
 			print('All facturas, if any, sent.')
 
-		#update_memberships(members, dryrun)
+		update_memberships(members, dryrun)
 
 	except Exception as e:
 		handle_error(e)
