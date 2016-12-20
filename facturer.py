@@ -46,8 +46,7 @@ def process_facturas(dryrun):
 			for member in members:
 				if member.isppsmember:
 					try:
-						x = 1
-						#handle_member(member, dryrun)
+						handle_member(member, dryrun)
 					except Exception as e:
 						handle_error(e, 'MemberId: ' + str(member.member_id))
 			print('All facturas, if any, sent.')
