@@ -40,16 +40,17 @@ def process_facturas(dryrun):
 
 		members = load_all(civicrm, 1, 200)
 		assign_member_ids(members, dryrun)
-	
+
 		if check_not_after():
-			print('Checking all members for pending facturas')
+			print('Sending facturas to all members as nessecary...')
 			for member in members:
 				if member.isppsmember:
-					print('Member ID: ' + str(member.member_id))
-					#try:
+					try:
+						x = 1
 						#handle_member(member, dryrun)
-					#except Exception as e:
-						#handle_error(e, 'MemberId: ' + str(member.member_id))
+					except Exception as e:
+						handle_error(e, 'MemberId: ' + str(member.member_id))
+			print('All facturas, if any, sent.')
 
 		#update_memberships(members, dryrun)
 

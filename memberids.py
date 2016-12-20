@@ -21,11 +21,10 @@ def assign_member_ids(members, dryrun):
 	print('Determining highest current member id...');
 	high_member_id = 0
 	for member in members:
-		print('Highest: ' + str(high_member_id) + ', this: '+ str(member.member_id))
 		if member.member_id > high_member_id:
 			high_member_id = member.member_id
 
-	print('Highest assigned member id is currently ' + str(high_member_id))
+	print('Highest assigned member id before updates is ' + str(high_member_id))
 
 	#run through all contacts and assign new member ids where necessary
 	print('Assigning new member ids...');
@@ -41,5 +40,5 @@ def assign_member_ids(members, dryrun):
 
 			send_message(member, 'welcome', dryrun)
 
-	print('Highest assigned member id is currently ' + str(high_member_id))
+	print('Highest assigned member id after updates is ' + str(high_member_id))
 
