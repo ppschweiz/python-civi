@@ -44,7 +44,7 @@ for member in members:
 		elif member.joindate.year == 2016:
 			lastfacdate = member.joindate + datetime.timedelta(days=-62)
 		else:
-			lastfacdate = datetime.datetime(2015, 12, 1) + datetime.timedelta(days=random.randint(0, 90))
+			lastfacdate = datetime.datetime(2016, 1, 3) + datetime.timedelta(days=random.randint(0, 60))
 
 		print('{} : {}'.format(member.member_id, lastfacdate))
 

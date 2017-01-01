@@ -43,7 +43,7 @@ then
   exit 6
 fi
 
-echo "Xelatex round 1..."
+#echo "Xelatex round 1..."
 xelatex -interaction nonstopmode -halt-on-error -file-line-error factura.tex > /dev/null
 if [ $? -ne 0 ]
 then
@@ -51,7 +51,7 @@ then
   exit 7
 fi
 
-echo "Xelatex round 2..."
+#echo "Xelatex round 2..."
 xelatex -interaction nonstopmode -halt-on-error -file-line-error factura.tex &> /dev/null
 if [ $? -ne 0 ]
 then
