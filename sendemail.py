@@ -1,5 +1,6 @@
 import smtplib
 import os
+from email.Header import Header
 from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -10,11 +11,14 @@ smtp_server_port = os.environ['SMTP_SERVER_PORT']
 smtp_username = os.environ['SMTP_USERNAME']
 smtp_password = os.environ['SMTP_PASSWORD']
 
-def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None, attachment_name=None):
+def format_address(name, address):
+	return ('"' + str(Header(unicode(name), 'UTF-8')) + '" <' + address + '>').encode('ascii')
+
+def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None, attachment_name=None):
 	msg = MIMEMultipart()
 	msg['Subject'] = subject
-	msg['From'] = sender.encode('latin-1')
-	msg['To'] = destination.encode('latin-1')
+	msg['From'] = sender
+	msg['To'] = receipient
 
 	if attachment != None:
 		with open(attachment, "rb") as fil:
@@ -33,7 +37,7 @@ def send_email(sender, destination, subject, bodyhtml, bodytext, attachment=None
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
 	s.starttls();
 	s.login(smtp_username, smtp_password);
-	s.sendmail(sender, destination, msg.as_string())
+	s.sendmail(sender, receipient, msg.as_string())
 	s.quit()
 
 def notify_admin(subject, text):

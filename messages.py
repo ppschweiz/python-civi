@@ -16,16 +16,17 @@ from model import Person
 from model import Membership
 from sendemail import send_email
 from sendemail import notify_admin
+from sendemail import format_address
 from files import get_text
 
 paylink_base = os.environ['PAYLINK_BASE'] 
 paylink_secret = os.environ['PAYLINK_SECRET'] 
-sender_de = u'"Piratenpartei Schweiz" <info@piratenpartei.ch>'
-sender_fr = u'"Parti Pirate Suisse" <info@partipirate.ch>'
-sender_it = u'"Partito Pirate Svizzera" <info@partitopirata.ch>'
-sender_en = u'"Pirate Party Switzerland" <info@pirateparty.ch>'
-registry = u'"Piratenpartei Schweiz" <registrar@piratenpartei.ch>'
-testbox = u'"Stefan Thöni" <stefan.thoeni@piratenpartei.ch>'
+sender_de = format_address(u'Piratenpartei Schweiz', 'info@piratenpartei.ch')
+sender_fr = format_address(u'Parti Pirate Suisse', 'info@partipirate.ch')
+sender_it = format_address(u'Partito Pirate Svizzera', 'info@partitopirata.ch')
+sender_en = format_address(u'Pirate Party Switzerland', 'info@pirateparty.ch')
+registry = format_address(u'Piratenpartei Schweiz', 'registrar@piratenpartei.ch')
+testbox = format_address(u'Stefan Thöni', 'stefan.thoeni@piratenpartei.ch')
 
 def sha1(text):
 	h = hashlib.sha1()
@@ -54,7 +55,7 @@ def send_message(person, mode, dryrun, attachement=None, attachementname=None):
 	else:
 		sender = sender_de
 
-	receipient = (u'"' + person.firstname + u' ' + person.lastname + u'" <' + person.email + u'>')
+	receipient = format_address(person.firstname + u' ' + person.lastname, person.email)
 	if not dryrun:
 		send_email(receipient, registry, subject, html, text, attachement, attachementname)
 		send_email(sender, receipient, subject, html, text, attachement, attachementname)
