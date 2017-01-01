@@ -34,9 +34,9 @@ def check_not_after():
 	date = parse_datetime(trim(text), datetime.datetime(2000, 1, 1))
 	now = datetime.datetime.now()
 	if now > date:
-		print('Factura content expired')
+		sys.stderr.write('Factura content expired')
 		notify_admin(u'Factura content expired', u'Factura content expired at {0}'.format(date))
 		return False
 	else:
-		print('Factura content valid')
+		sys.stderr.write('Factura content valid')
 		return True

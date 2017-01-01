@@ -46,8 +46,9 @@ for member in members:
 		else:
 			lastfacdate = datetime.datetime(2016, 1, 3) + datetime.timedelta(days=random.randint(0, 60))
 
-		print('{} : {}'.format(member.member_id, lastfacdate))
+		sys.stderr.write('{} : {}'.format(member.member_id, lastfacdate))
 
 		member.update_facturadate(lastfacdate)
 
-print("done")
+sys.stderr.write"done")
+

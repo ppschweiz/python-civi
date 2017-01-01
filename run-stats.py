@@ -11,4 +11,5 @@ import os
 from stats import process_stats
 
 process_stats();
-print("done");
+
+sys.stderr.write("done");

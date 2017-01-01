@@ -25,4 +25,4 @@ civicrm = CiviCRM(url, site_key, api_key, True)
 member_id = sys.argv[1]
 person = Person(civicrm, member_id=member_id)
 update_membership(person, False)
-print("done");
+sys.stderr.write("done");

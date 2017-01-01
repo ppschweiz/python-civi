@@ -26,7 +26,7 @@ url = os.environ['CIVI_API_URL']
 civicrm = CiviCRM(url, site_key, api_key, True)
 
 def update_memberships(members, dryrun):
-	print('Updating memberships')
+	sys.stderr.write('Updating memberships')
 	for member in members:
 		if member.isppsmember:
 			try:
@@ -42,14 +42,14 @@ def process_facturas(dryrun):
 		assign_member_ids(members, dryrun)
 
 		if check_not_after():
-			print('Sending facturas to all members as nessecary...')
+			sys.stderr.write('Sending facturas to all members as nessecary...')
 			for member in members:
 				if member.isppsmember:
 					try:
 						handle_member(member, dryrun)
 					except Exception as e:
 						handle_error(e, 'MemberId: ' + str(member.member_id))
-			print('All facturas, if any, sent.')
+			sys.stderr.write('All facturas, if any, sent.')
 
 		update_memberships(members, dryrun)
 

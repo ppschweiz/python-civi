@@ -21,5 +21,6 @@ civicrm = CiviCRM(url, site_key, api_key, True)
 
 members = load_all(civicrm, 1, 200)
 assign_member_ids(members)
-print("done");
+
+sys.stderr.write("done");
 

@@ -32,7 +32,7 @@ def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None,
 	alt.attach(MIMEText(bodytext, 'plain', 'utf-8'))
 	alt.attach(MIMEText(bodyhtml, 'html', 'utf-8'))
 
-	print('Sending mail...')
+	sys.stderr.write('Sending mail...')
 
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
 	s.starttls();

@@ -64,7 +64,7 @@ def create_factura(person, date):
 	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, year), get_factura_number(person, year), get_factura_ref(person, year), format_date(person.short_language(), date), year).encode('utf8'))
 	csv.close()
 
-	#subprocess.check_call('./compile.sh ' + person.short_language(), shell=True)
+	subprocess.check_call('./compile.sh ' + person.short_language(), shell=True)
 
 def send_factura(person, date, reminderlevel, dryrun):
 	create_factura(person, date)
@@ -87,29 +87,29 @@ def send_factura(person, date, reminderlevel, dryrun):
 	else:
 		attachmentname = 'Rechnung.pdf'
 
-	#send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname)
+	send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname)
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()
 	if (now > (person.facturadate + datetime.timedelta(days=365))) and (now > (person.joindate + datetime.timedelta(hours=23))):
-		print('Member {} needs new factura'.format(person.member_id))
+		sys.stderr.write('Member {} needs new factura'.format(person.member_id))
 		send_factura(person, now, 0, dryrun)
 
 		if not dryrun:
 			person.update_factura(now, now, 0)
 		else:
-			print('Not updating factura in dry run');
+			sys.stderr.write('Not updating factura in dry run')
 
 		sleep(60)
 
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
-		print('Member {} needs new reminder'.format(person.member_id))
+		sys.stderr.write('Member {} needs new reminder'.format(person.member_id))
 		send_factura(person, person.facturadate, person.reminderlevel + 1, dryrun)
 
 		if not dryrun:
 			person.update_reminder(now, person.reminderlevel + 1)
 		else:
-			print('Not updating reminder in dry run');
+			sys.stderr.write('Not updating reminder in dry run');
 
 		sleep(60)
 
@@ -120,25 +120,25 @@ def update_membership(person, dryrun):
 		if not person.ppsmembership.active:
 			if not dryrun:
 				person.update_memberships(True, person.paymentdate, person.facturadate + datetime.timedelta(days=425))
-				print('Activated already payed memberships for person id ' + str(person.member_id))
+				sys.stderr.write('Activated already payed memberships for person id ' + str(person.member_id))
 			else:
-				print('Not activating already payed memberships for person id ' + str(person.member_id) + ' in dryrun')
+				sys.stderr.write('Not activating already payed memberships for person id ' + str(person.member_id) + ' in dryrun')
 
 	# payment in the last year and current factura not yet 60 days old => should be active
 	elif (person.paymentdate >= person.facturadate + datetime.timedelta(days=-365)) and (now < person.facturadate + datetime.timedelta(days=60)):
 		if not person.ppsmembership.active:
 			if not dryrun:
 				person.update_memberships(True, person.paymentdate, person.facturadate + datetime.timedelta(days=60))
-				print('Activated not yet expired memberships for person id ' + str(person.member_id))
+				sys.stderr.write('Activated not yet expired memberships for person id ' + str(person.member_id))
 			else:
-				print('Not activating not yet expired memberships for person id ' + str(person.member_id) + ' in dryrun')
+				sys.stderr.write('Not activating not yet expired memberships for person id ' + str(person.member_id) + ' in dryrun')
 
 	# other cases => should be inactive
 	else:
 		if person.ppsmembership.active:
 			if not dryrun:
 				person.update_memberships(False, person.paymentdate, person.facturadate + datetime.timedelta(days=60))
-				print('Deactivated epxired memberships for person id ' + str(person.member_id))
+				sys.stderr.write('Deactivated epxired memberships for person id ' + str(person.member_id))
 			else:
-				print('Not deactivating epxired memberships for person id ' + str(person.member_id) + ' in dryrun')
+				sys.stderr.write('Not deactivating epxired memberships for person id ' + str(person.member_id) + ' in dryrun')
 
