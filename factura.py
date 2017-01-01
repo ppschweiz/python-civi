@@ -64,7 +64,7 @@ def create_factura(person, date):
 	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, person.lastname, person.firstname, person.email, person.country, person.street, person.postalcode, person.city, person.greeting, person.section.fullname, get_section_amount(person), get_total_amount(person), get_factura_number(person, year), get_factura_number(person, year), get_factura_ref(person, year), format_date(person.short_language(), date), year).encode('utf8'))
 	csv.close()
 
-	subprocess.check_call('./compile.sh ' + person.short_language(), shell=True)
+	#subprocess.check_call('./compile.sh ' + person.short_language(), shell=True)
 
 def send_factura(person, date, reminderlevel, dryrun):
 	create_factura(person, date)
@@ -87,7 +87,7 @@ def send_factura(person, date, reminderlevel, dryrun):
 	else:
 		attachmentname = 'Rechnung.pdf'
 
-	send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname)
+	#send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname)
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()
