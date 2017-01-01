@@ -25,6 +25,7 @@ sender_fr = u'"Parti Pirate Suisse" <info@partipirate.ch>'
 sender_it = u'"Partito Pirate Svizzera" <info@partitopirata.ch>'
 sender_en = u'"Pirate Party Switzerland" <info@pirateparty.ch>'
 registry = u'"Piratenpartei Schweiz" <registrar@piratenpartei.ch>'
+testbox = u'"Stefan Thöni" <stefan.thoeni@piratenpartei.ch>'
 
 def sha1(text):
 	h = hashlib.sha1()
@@ -54,9 +55,10 @@ def send_message(person, mode, dryrun, attachement=None, attachementname=None):
 		sender = sender_de
 
 	receipient = (u'"' + person.firstname + u' ' + person.lastname + u'" <' + person.email + u'>')
-	send_email(sender, registry, subject, html, text, attachement, attachementname)
 	if not dryrun:
+		send_email(receipient, registry, subject, html, text, attachement, attachementname)
 		send_email(sender, receipient, subject, html, text, attachement, attachementname)
 	else:
+		send_email(receipient, testbox, subject, html, text, attachement, attachementname)
 		print('Not sending mail due to dry run');
 
