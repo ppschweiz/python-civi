@@ -30,4 +30,4 @@ if len(sys.argv) >= 3 and (sys.argv[2] == 'HOT'):
 else:
 	handle_member(person, True)
 
-sys.stderr.write("done");
+sys.stderr.write('done\n')

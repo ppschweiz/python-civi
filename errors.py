@@ -13,6 +13,6 @@ from sendemail import notify_admin
 
 def handle_error(e, additional=''):
 	msg = '{}\n{}\n{}\n{}'.format(type(e), e, traceback.format_exc(), additional)
-	sys.stderr.write(msg)
+	sys.stderr.write(msg + '\n')
 	notify_admin('Facturer error', msg)
 

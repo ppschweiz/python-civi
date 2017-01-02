@@ -61,5 +61,5 @@ def send_message(person, mode, dryrun, attachement=None, attachementname=None):
 		send_email(sender, receipient, subject, html, text, attachement, attachementname)
 	else:
 		send_email(receipient, testbox, subject, html, text, attachement, attachementname)
-		print('Not sending mail due to dry run');
+		sys.stderr.write('Not sending mail due to dry run\n');
 

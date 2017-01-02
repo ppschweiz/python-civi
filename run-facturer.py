@@ -15,4 +15,5 @@ if len(sys.argv) >= 2 and (sys.argv[1] == 'HOT'):
 else:
 	process_facturas(True)
 
-sys.stderr.write("done")
+sys.stderr.write('done\n')
+

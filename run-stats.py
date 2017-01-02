@@ -12,4 +12,5 @@ from stats import process_stats
 
 process_stats();
 
-sys.stderr.write("done");
+sys.stderr.write('done\n')
+

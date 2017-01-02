@@ -92,24 +92,24 @@ def send_factura(person, date, reminderlevel, dryrun):
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()
 	if (now > (person.facturadate + datetime.timedelta(days=365))) and (now > (person.joindate + datetime.timedelta(hours=23))):
-		sys.stderr.write('Member {} needs new factura'.format(person.member_id))
+		sys.stderr.write('Member {} needs new factura\n'.format(person.member_id))
 		send_factura(person, now, 0, dryrun)
 
 		if not dryrun:
 			person.update_factura(now, now, 0)
 		else:
-			sys.stderr.write('Not updating factura in dry run')
+			sys.stderr.write('Not updating factura in dry run\n')
 
 		sleep(60)
 
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
-		sys.stderr.write('Member {} needs new reminder'.format(person.member_id))
+		sys.stderr.write('Member {} needs new reminder\n'.format(person.member_id))
 		send_factura(person, person.facturadate, person.reminderlevel + 1, dryrun)
 
 		if not dryrun:
 			person.update_reminder(now, person.reminderlevel + 1)
 		else:
-			sys.stderr.write('Not updating reminder in dry run');
+			sys.stderr.write('Not updating reminder in dry run\n');
 
 		sleep(60)
 
@@ -120,25 +120,25 @@ def update_membership(person, dryrun):
 		if not person.ppsmembership.active:
 			if not dryrun:
 				person.update_memberships(True, person.paymentdate, person.facturadate + datetime.timedelta(days=425))
-				sys.stderr.write('Activated already payed memberships for person id ' + str(person.member_id))
+				sys.stderr.write('Activated already payed memberships for person id {}\n'.format(person.member_id))
 			else:
-				sys.stderr.write('Not activating already payed memberships for person id ' + str(person.member_id) + ' in dryrun')
+				sys.stderr.write('Not activating already payed memberships for person id {} in dryrun\n'.format(person.member_id))
 
 	# payment in the last year and current factura not yet 60 days old => should be active
 	elif (person.paymentdate >= person.facturadate + datetime.timedelta(days=-365)) and (now < person.facturadate + datetime.timedelta(days=60)):
 		if not person.ppsmembership.active:
 			if not dryrun:
 				person.update_memberships(True, person.paymentdate, person.facturadate + datetime.timedelta(days=60))
-				sys.stderr.write('Activated not yet expired memberships for person id ' + str(person.member_id))
+				sys.stderr.write('Activated not yet expired memberships for person id {}\n'.format(person.member_id))
 			else:
-				sys.stderr.write('Not activating not yet expired memberships for person id ' + str(person.member_id) + ' in dryrun')
+				sys.stderr.write('Not activating not yet expired memberships for person id {}\n'.format(person.member_id))
 
 	# other cases => should be inactive
 	else:
 		if person.ppsmembership.active:
 			if not dryrun:
 				person.update_memberships(False, person.paymentdate, person.facturadate + datetime.timedelta(days=60))
-				sys.stderr.write('Deactivated epxired memberships for person id ' + str(person.member_id))
+				sys.stderr.write('Deactivated epxired memberships for person id {}\n'.format(person.member_id))
 			else:
-				sys.stderr.write('Not deactivating epxired memberships for person id ' + str(person.member_id) + ' in dryrun')
+				sys.stderr.write('Not deactivating epxired memberships for person id {} in dryrun\n'.format(person.member_id))
 

@@ -185,7 +185,7 @@ class Membership:
 		if self.name in deps:
 			self.department = deps[self.name]
 		else:
-			sys.stderr.write('Unknown department: ' + self.name + "\n")
+			sys.stderr.write('Unknown department: {}\n'.format(self.name))
 			self.department = None
 
 	def update(self, setactive, start, end):

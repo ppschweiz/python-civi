@@ -23,6 +23,6 @@ def update_entity(civicrm, entity_type, entity_id, **kwargs):
 			civicrm.update(entity_type, entity_id, **kwargs)
 			return
 		except CivicrmError as e:
-			sys.stderr.write('CiviCRM Error on update, retry ' + str(retry));
+			sys.stderr.write('CiviCRM Error on update, retry {}\n'.format(retry));
 	raise Error('CiviCRM update failed permanently')
 
