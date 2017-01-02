@@ -100,6 +100,8 @@ def handle_member(person, dryrun):
 		else:
 			sys.stderr.write('Not updating factura in dry run\n')
 
+		return 1
+
 	if (now > (person.facturadate + datetime.timedelta(days=365))) and (now > (person.joindate + datetime.timedelta(hours=23))):
 		sys.stderr.write('Member {} needs new factura\n'.format(person.member_id))
 		send_factura(person, now, 0, dryrun)
@@ -109,7 +111,7 @@ def handle_member(person, dryrun):
 		else:
 			sys.stderr.write('Not updating factura in dry run\n')
 
-		sleep(60)
+		return 1
 
 	elif ((person.facturadate > person.paymentdate) and  now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))):	
 		sys.stderr.write('Member {} needs new reminder\n'.format(person.member_id))
@@ -120,7 +122,10 @@ def handle_member(person, dryrun):
 		else:
 			sys.stderr.write('Not updating reminder in dry run\n');
 
-		sleep(60)
+		return 1
+
+	else:
+		return 0
 
 def update_membership(person, dryrun):
 	now = datetime.datetime.now()

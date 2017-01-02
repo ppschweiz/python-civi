@@ -43,13 +43,14 @@ def process_facturas(dryrun):
 
 		if check_not_after():
 			sys.stderr.write('Sending facturas to all members as nessecary...\n')
+			counter = 0
 			for member in members:
-				if member.isppsmember:
+				if (counter < 10) and member.isppsmember:
 					try:
-						handle_member(member, dryrun)
+						counter += handle_member(member, dryrun)
 					except Exception as e:
 						handle_error(e, 'MemberId: ' + str(member.member_id))
-			sys.stderr.write('All facturas, if any, sent.\n')
+			sys.stderr.write('{0} facturas sent.\n'.format(counter))
 
 		update_memberships(members, dryrun)
 
