@@ -91,6 +91,15 @@ def send_factura(person, date, reminderlevel, dryrun):
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()
+	if (now > (person.facturadate + datetime.timedelta(days=365))) and (person.paymentdate > now + datetime.timedelta(days=-30)):
+		sys.stderr.write('Member {} has payed before factura\n'.format(person.member_id))
+		
+		if not dryrun:
+			facdate = person.paymentdate + datetime.timedelta(days=-1)
+			person.update_factura(facdate, facdate, 0)
+		else:
+			sys.stderr.write('Not updating factura in dry run\n')
+
 	if (now > (person.facturadate + datetime.timedelta(days=365))) and (now > (person.joindate + datetime.timedelta(hours=23))):
 		sys.stderr.write('Member {} needs new factura\n'.format(person.member_id))
 		send_factura(person, now, 0, dryrun)
