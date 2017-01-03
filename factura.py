@@ -113,7 +113,7 @@ def handle_member(person, dryrun):
 
 		return 1
 
-	elif (person.facturadate > person.paymentdate) and (now > (person.reminderdate + datetime.timedelta(days=30)))  and (person.reminderlevel < 3):	
+	elif (person.facturadate > person.paymentdate) and (now > (person.reminderdate + datetime.timedelta(days=30))) and (now < (person.facturadate + datetime.timedelta(days=110))) and (person.reminderlevel < 3):
 		sys.stderr.write('Member {} needs new reminder\n'.format(person.member_id))
 		send_factura(person, person.facturadate, person.reminderlevel + 1, dryrun)
 
