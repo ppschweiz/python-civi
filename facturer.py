@@ -45,7 +45,7 @@ def process_facturas(dryrun):
 			sys.stderr.write('Sending facturas to all members as nessecary...\n')
 			counter = 0
 			for member in members:
-				if (counter < 10) and member.isppsmember:
+				if (counter < 10) and member.email and member.isppsmember:
 					try:
 						counter += handle_member(member, dryrun)
 					except Exception as e:
