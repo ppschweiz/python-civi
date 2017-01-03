@@ -39,7 +39,7 @@ def process_facturas(dryrun):
 		checkout_content()
 
 		members = load_all(civicrm, 1, 200)
-		assign_member_ids(members, dryrun)
+		assign_member_ids(civicrm, members, dryrun)
 
 		if check_not_after():
 			sys.stderr.write('Sending facturas to all members as nessecary...\n')

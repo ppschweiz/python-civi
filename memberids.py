@@ -16,7 +16,7 @@ from updater import update_entity
 from messages import send_message
 from sendemail import notify_admin
 
-def assign_member_ids(members, dryrun):
+def assign_member_ids(civicrm, members, dryrun):
 	#run through all contacts and determine the current highest member id
 	sys.stderr.write('Determining highest current member id...\n');
 	high_member_id = 0
