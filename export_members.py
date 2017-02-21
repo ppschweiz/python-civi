@@ -23,35 +23,38 @@ api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
-with open(sys.argv[1]) as f:
-    memberlist = f.read().splitlines()
+def load_memberlist():
+	with open(sys.argv[1]) as f:
+		memberidlist = f.read().splitlines()
+	memberlist = list();
+	for member_id in memberidlist:
+		onemember = load_persons(civicrm, external_identifier=member_id, progress=1, batch=20, returnfields=get_required_fields_person())
+		for member in onemember:
+			memberlist.append(member)
+	return memberlist
 
-#members = load_all(civicrm, 1, 50, True)
+def load_allmembers():
+	allmembers = load_all(civicrm, 1, 200, True)
+	memberlist = list();
+	for member in allmembers:
+		if member.isppsmember and member.idserverstatus >= 1:
+			memberlist.append(member)
+	return memberlist
 
-members = list();
-for member_id in memberlist:
-	onemember = load_persons(civicrm, external_identifier=member_id, progress=1, batch=20, returnfields=get_required_fields_person())
-	for member in onemember:
-		members.append(member)
+members = load_allmembers()
+#members = load_memberlist()
 
-print('member,1.0')
-print('uuid,email,status,department,verified,registered')
+sys.stdout.write('member,1.0\n')
+sys.stdout.write('uuid,email,status,department,verified,registered\n')
 
 for member in members:
-	if len(member.memberships) > 0 and len(member.email) > 0 and str(member.member_id) in memberlist:
-		mems = dict();
-		for membership in member.memberships:
-			mems[membership.name] = membership
-		for membership in member.memberships:
-			if membership.department.parent in mems:
-				del mems[membership.department.parent]
-		first = mems[mems.keys()[0]]
-		department = first.department.fullname
-		#if first.active:
-		#	status = 'member'
-		#else:
-		#	status = 'eligible'
-		status = 'member'
+	if len(member.memberships) > 0 and len(member.email) > 0:
+		department = member.lowestsection.fullname
+		if member.ppsmembership.active:
+			#status = 'eligible'
+			status = 'member'
+		else:
+			status = 'member'
 		sys.stdout.write(str(member.member_id) + ",")
 		sys.stdout.write(member.email + ",")
 		sys.stdout.write(status + ",")

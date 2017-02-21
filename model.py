@@ -26,7 +26,7 @@ import datetime
 from updater import update_entity
 
 def get_required_fields_person():
-	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19,custom_20'
+	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19,custom_20,custom_21'
 
 class Person:
 	def __init__(self, civicrm, **kwargs):
@@ -102,6 +102,7 @@ class Person:
 		self.isppsmember = False
 		self.ppsmembership = None
 		self.joindate = None
+		self.lowestsection = None
 
 		for membership in self.memberships:
 			if membership.department.number == 2:
@@ -110,6 +111,8 @@ class Person:
 				self.joindate = membership.joindate
 			if membership.department.number > 2 and membership.department.amount > 0:
 				self.section = membership.department
+			if self.lowestsection == None or (self.lowestsection != None and (membership.department.number > self.lowestsection.number)):
+				self.lowestsection = membership.department
 
 		self.verified = (contact['custom_7'] == '1')
 
@@ -117,6 +120,7 @@ class Person:
 		self.reminderdate = parse_datetime(contact['custom_18'], datetime.datetime(2000, 1, 1))
 		self.paymentdate = parse_datetime(contact['custom_19'], datetime.datetime(2000, 1, 1))
 		self.reminderlevel = parse_int(contact['custom_20'])
+		self.idserverstatus = parse_int(contact['custom_21'])
 
 	def short_language(self):
 		if self.language == 'fr_FR':
@@ -157,6 +161,10 @@ class Person:
 	def update_memberships(self, active, start, end):
 		for membership in self.memberships:
 			membership.update(active, start, end)
+	
+	def update_idserverstatus(self, status):
+		self.idserverstatus = status
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_21=self.idserverstatus)
 
 #
 # Membership 'PPZS', id=2
