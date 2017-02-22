@@ -23,8 +23,10 @@ api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
+reset_filename = sys.argv[1]
+
 def load_memberlist():
-	with open(sys.argv[1]) as f:
+	with open(sys.argv[2]) as f:
 		memberidlist = f.read().splitlines()
 	memberlist = list();
 	for member_id in memberidlist:
@@ -47,6 +49,11 @@ members = load_allmembers()
 sys.stdout.write('member,1.0\n')
 sys.stdout.write('uuid,email,status,department,verified,registered\n')
 
+if os.path.isfile(reset_filename):
+	os.remove(reset_filename)
+
+reset_file = open(reset_filename, 'w')
+
 for member in members:
 	if len(member.memberships) > 0 and len(member.email) > 0:
 		department = member.lowestsection.fullname
@@ -60,4 +67,9 @@ for member in members:
 		sys.stdout.write(status + ",")
 		sys.stdout.write(department + ",")
 		sys.stdout.write(str(member.verified) + ",\"\"\n")
+		if member.idserverstatus >= 10:
+			reset_file.write(str(member.member_id) + '\n')
+			member.update_idserverstatus(member.idserverstatus - 10)
+
+reset_file.close()
 
