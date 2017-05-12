@@ -15,6 +15,7 @@ from util import is_number
 from model import Person
 from model import Membership
 from factura import make_factura
+from facturer import checkout_content
 import datetime
 
 site_key = os.environ['CIVI_SITE_KEY']
@@ -24,6 +25,8 @@ civicrm = CiviCRM(url, site_key, api_key, True)
 
 member_id = sys.argv[1]
 person = Person(civicrm, member_id=member_id)
+
+checkout_content();
 
 make_factura(person, datetime.datetime.now()) 
 
