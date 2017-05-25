@@ -60,7 +60,7 @@ if not os.path.isdir(export_gpg_dir):
 
 oldfiles = os.listdir(export_gpg_dir) 
 for oldfile in oldfiles:
-    os.remove(oldfile)
+    os.remove(os.path.join(export_gpg_dir, oldfile))
 
 for member in members:
 	if len(member.memberships) > 0 and len(member.email) > 0:
