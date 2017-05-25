@@ -24,6 +24,7 @@ url = os.environ['CIVI_API_URL']
 civicrm = CiviCRM(url, site_key, api_key, True)
 
 reset_filename = sys.argv[1]
+export_gpg_dir = sys.argv[2]
 
 def load_memberlist():
 	with open(sys.argv[2]) as f:
@@ -54,6 +55,13 @@ if os.path.isfile(reset_filename):
 
 reset_file = open(reset_filename, 'w')
 
+if not os.path.isdir(export_gpg_dir):
+	os.makedirs(export_gpg_dir)
+
+oldfiles = os.listdir(export_gpg_dir) 
+for oldfile in oldfiles:
+    os.remove(oldfile)
+
 for member in members:
 	if len(member.memberships) > 0 and len(member.email) > 0:
 		department = member.lowestsection.fullname
@@ -70,6 +78,11 @@ for member in members:
 		if member.idserverstatus >= 10:
 			reset_file.write(str(member.member_id) + '\n')
 			member.update_idserverstatus(member.idserverstatus - 10)
+		if member.openpgp_attachement_id > 0:
+			member.load_openpgp_keydata()
+			keyfile = open(os.path.join(export_gpg_dir, str(member.member_id) + '.asc'), 'w')
+			keyfile.write(member.openpgp_keydata)
+			keyfile.close()
 
 reset_file.close()
 

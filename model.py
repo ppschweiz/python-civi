@@ -7,10 +7,12 @@
 #
 # Special fields:
 # * Verifikation für Televotia/Urabstimmung: custom_7
+# * OpenPGP Public Key: custom_12
 # * Rechnungsdatum: custom_17
 # * Mahnungsdatum: custom_18
 # * Zahlungsdatum: custom_19
 # * Mahnstufe: custom_20
+# * ID Server Status: custom_21
 
 import sys
 import os
@@ -26,7 +28,7 @@ import datetime
 from updater import update_entity
 
 def get_required_fields_person():
-	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_17,custom_18,custom_19,custom_20,custom_21'
+	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_12,custom_17,custom_18,custom_19,custom_20,custom_21'
 
 class Person:
 	def __init__(self, civicrm, **kwargs):
@@ -115,6 +117,8 @@ class Person:
 				self.lowestsection = membership.department
 
 		self.verified = (contact['custom_7'] == '1')
+		self.openpgp_attachement_id = parse_int(contact['custom_12'])
+		self.openpgp_keydata = None
 
 		self.facturadate = parse_datetime(contact['custom_17'], datetime.datetime(2000, 1, 1))
 		self.reminderdate = parse_datetime(contact['custom_18'], datetime.datetime(2000, 1, 1))
@@ -165,6 +169,10 @@ class Person:
 	def update_idserverstatus(self, status):
 		self.idserverstatus = status
 		update_entity(self.civicrm, 'Contact', self.civi_id, custom_21=self.idserverstatus)
+
+	def load_openpgp_keydata(self):
+		if self.openpgp_attachement_id > 0:
+			self.openpgp_keydata = self.civicrm.getdata('Attachment', 'content', id=self.openpgp_attachement_id) 
 
 #
 # Membership 'PPZS', id=2
