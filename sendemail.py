@@ -13,7 +13,7 @@ smtp_username = os.environ['SMTP_USERNAME']
 smtp_password = os.environ['SMTP_PASSWORD']
 
 def format_address(name, address):
-	return ('"' + str(Header(unicode(name), 'UTF-8')) + '" <' + address + '>').encode('ascii')
+	return ('"' + Header(str(name), 'UTF-8').encode() + '" <' + address + '>').encode('ascii')
 
 def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None, attachment_name=None):
 	msg = MIMEMultipart()
