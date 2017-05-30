@@ -8,13 +8,13 @@
 
 import sys
 import os
+import codecs
 from departments import get_departments
 
 def get_number(dep):
 	return dep.number
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 deps = get_departments()
 
