@@ -8,12 +8,15 @@
 
 import sys
 import os
+import codecs
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
 from loader import load_all
 from loader import load_persons
 from model import get_required_fields_person
+
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
