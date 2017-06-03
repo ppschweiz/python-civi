@@ -7,6 +7,17 @@
 #
 
 import datetime
+import hashlib
+
+def sha1(text):
+	h = hashlib.sha1()
+	h.update(text.encode('ascii'))
+	return h.hexdigest()
+
+def sha256(text):
+	h = hashlib.sha256()
+	h.update(text.encode('ascii'))
+	return h.hexdigest()
 
 def is_number(s):
     try:

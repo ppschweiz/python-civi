@@ -2,9 +2,9 @@
 
 CURDIR="$(pwd)"
 TMPDIR='/tmp'
-TARGETDIR="$TMPDIR/factura"
+TARGETDIR="$TMPDIR/$1"
 COMPILEDIR="$TMPDIR/compile"
-CONTENTDIR="$TMPDIR/factura-content"
+CONTENTDIR="$TMPDIR/$1-content"
 
 rm -rf $COMPILEDIR &> /dev/null
 
@@ -25,26 +25,26 @@ fi
 cp $CONTENTDIR/*.* .
 if [ $? -ne 0 ]
 then
-  echo "Error copying factura-content"
+  echo "Error copying $1-content"
   exit 5
 fi
 
-cp $CONTENTDIR/$1/factura.tex .
+cp $CONTENTDIR/$2/$1.tex .
 if [ $? -ne 0 ]
 then
-  echo "Error copying language specific factura"
+  echo "Error copying language specific $1"
   exit 6
 fi
 
 cp $TARGETDIR/people.csv .
 if [ $? -ne 0 ]
 then
-  echo "Error copying member data for factura"
+  echo "Error copying member data for $1"
   exit 6
 fi
 
 #echo "Xelatex round 1..."
-xelatex -interaction nonstopmode -halt-on-error -file-line-error factura.tex > /dev/null
+xelatex -interaction nonstopmode -halt-on-error -file-line-error $1.tex > /dev/null
 if [ $? -ne 0 ]
 then
   echo "Error in xelatex"
@@ -52,17 +52,17 @@ then
 fi
 
 #echo "Xelatex round 2..."
-xelatex -interaction nonstopmode -halt-on-error -file-line-error factura.tex &> /dev/null
+xelatex -interaction nonstopmode -halt-on-error -file-line-error $1.tex &> /dev/null
 if [ $? -ne 0 ]
 then
   echo "Error in xelatex"
   exit 8
 fi
 
-cp factura.pdf $TARGETDIR/
+cp $1.pdf $TARGETDIR/
 if [ $? -ne 0 ]
 then
-  echo "Error copying factura.pdf"
+  echo "Error copying $1.pdf"
   exit 10
 fi
 

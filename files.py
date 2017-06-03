@@ -16,21 +16,25 @@ from util import trim
 from sendemail import notify_admin
 
 TMP_DIR = '/tmp'
-CONTENT_DIR = TMP_DIR + '/factura-content'
-NOT_AFTER_FILE = CONTENT_DIR + '/not-after'
+
+def get_content_dir(app):
+	return TMP_DIR + '/' + app + '-content'
+
+def get_not_after_file(app):
+	return get_content_dir(app) + '/not-after'
 
 def readfile(filename):
 	with codecs.open(filename, 'r', encoding='utf-8') as fil:
 		return fil.read()
 
-def checkout_content():
-	subprocess.check_call('./checkout-content.sh', shell=True)
+def checkout_content(app):
+	subprocess.check_call('./checkout-content.sh ' + app, shell=True)
 
-def get_text(language, mode, extension):
-	return readfile(CONTENT_DIR + '/' + language + '/' + mode + '.' + extension)
+def get_text(app, target, mode, extension):
+	return readfile(get_content_dir(app) + '/' + target + '/' + mode + '.' + extension)
 
-def check_not_after():
-	text = readfile(NOT_AFTER_FILE)
+def check_not_after(app):
+	text = readfile(get_not_after_file(app))
 	date = parse_datetime(trim(text), datetime.datetime(2000, 1, 1))
 	now = datetime.datetime.now()
 	if now > date:

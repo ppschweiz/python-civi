@@ -10,6 +10,8 @@ import sys
 import os
 import datetime
 import subprocess
+import re
+import gnupg
 from string import Template
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
@@ -23,12 +25,25 @@ from sendemail import notify_admin
 from bulletin_messages import send_message
 from time import sleep
 from files import get_text
+from pingen import postal_mail_file
 
 bulletin_secret = os.environ['BULLETIN_SECRET'] 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
+gpg = gnupg.GPG()
+address = re.compile('^.*\ <(.*)\>$')
+
+def get_keyid(receipient):
+	keys = gpg.list_keys(False)
+	for key in keys:
+		if key['trust'] in ['u', 'f']:
+			for uid in key['uids']:
+				match = address.match(uid)
+				if receipient == match.group(1):
+					return key['keyid']
+	return None
 
 def format_date(language, date):
 	if language == 'de':
@@ -74,5 +89,12 @@ def send_bulletin(person, voteid, dryrun):
 	else:
 		attachmentname = 'Abstimmung.pdf'
 
-	send_message(person, voteid, dryrun, '/tmp/bulletin/bulletin.pdf', attachmentname)
+	keyid = get_keyid(person.email)
+	if keyid != None:
+		print(u'Key for {} email {} found: {}'.format(person.member_id, person.email, keyid))
+		send_message(person, voteid, dryrun, keyid, '/tmp/bulletin/bulletin.pdf', attachmentname)
+	else:
+		print(u'No key for {} email {}'. format(person.member_id, person.email))
+		postal_mail_file('/tmp/bulletin/bulletin.pdf', dryrun)
+
 

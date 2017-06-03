@@ -36,12 +36,12 @@ def update_memberships(members, dryrun):
 
 def process_facturas(dryrun):
 	try:
-		checkout_content()
+		checkout_content('factura')
 
 		members = load_all(civicrm, 1, 200)
 		assign_member_ids(civicrm, members, dryrun)
 
-		if check_not_after():
+		if check_not_after('factura'):
 			sys.stderr.write('Sending facturas to all members as nessecary...\n')
 			counter = 0
 			for member in members:

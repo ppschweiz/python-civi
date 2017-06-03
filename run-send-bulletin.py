@@ -14,7 +14,7 @@ from pythoncivicrm.pythoncivicrm import matches_required
 from util import is_number
 from model import Person
 from model import Membership
-from factura import make_factura
+from bulletin import send_bulletin
 from files import checkout_content
 import datetime
 
@@ -26,8 +26,9 @@ civicrm = CiviCRM(url, site_key, api_key, True)
 member_id = sys.argv[1]
 person = Person(civicrm, member_id=member_id)
 
-checkout_content('factura');
+checkout_content('bulletin');
 
-make_factura(person, datetime.datetime.now()) 
+voteid = sys.argv[2]
+send_bulletin(person, voteid, True) 
 
 sys.stderr.write('done\n')

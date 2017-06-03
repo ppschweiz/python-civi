@@ -20,7 +20,7 @@ from util import trim
 from model import Person
 from model import Membership
 from sendemail import notify_admin
-from messages import send_message
+from factura_messages import send_message
 from time import sleep
 from files import get_text
 
@@ -53,7 +53,7 @@ def format_date(language, date):
 		return u'{:04d}-{:02d}-{:02d}'.format(date.year, date.month, date.day)
 
 def create_factura(person, date, slip):
-	subprocess.check_call('./prepare.sh', shell=True)
+	subprocess.check_call('./prepare.sh factura', shell=True)
 	
 	if (date.month == 12) or (date.month == 11):
 		year = date.year + 1
@@ -61,27 +61,27 @@ def create_factura(person, date, slip):
 		year = date.year
 
 	csv = open("/tmp/factura/people.csv", "w")
-	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, 
-																		   person.lastname, 
-																		   person.firstname, 
-																		   person.email, 
-																		   person.country, 
-																		   person.street, 
-																		   person.postalcode, 
-																		   person.city, 
-																		   person.greeting, 
-																		   person.section.fullname, 
-																		   get_section_amount(person), 
-																		   get_total_amount(person), 
-																		   get_factura_number(person, year), 
-																		   get_factura_number(person, year), 
-																		   get_factura_ref(person, year), 
-																		   format_date(person.short_language(), date), year,
-																		   'yes' if slip else 'no')
-																			.encode('utf8'))
+	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(
+		person.member_id, 
+		person.lastname, 
+		person.firstname, 
+		person.email, 
+		person.country, 
+		person.street, 
+		person.postalcode, 
+		person.city, 
+		person.greeting, 
+		person.section.fullname, 
+		get_section_amount(person), 
+		get_total_amount(person), 
+		get_factura_number(person, year), 
+		get_factura_number(person, year), 
+		get_factura_ref(person, year), 
+		format_date(person.short_language(), date), year,
+		'yes' if slip else 'no'))
 	csv.close()
 
-	subprocess.check_call('./compile.sh ' + person.short_language(), shell=True)
+	subprocess.check_call('./compile.sh factura ' + person.short_language(), shell=True)
 
 def make_factura(person, date):
 	create_factura(person, date, False)

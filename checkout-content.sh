@@ -2,7 +2,7 @@
 
 CURDIR="$(pwd)"
 TMPDIR='/tmp'
-CONTENTDIR="$TMPDIR/factura-content"
+CONTENTDIR="$TMPDIR/$1-content"
 
 rm -rf $CONTENTDIR &> /dev/null
 
@@ -13,11 +13,11 @@ then
   exit 3
 fi
 
-echo "Cloning factura content git..."
-git clone https://github.com/ppschweiz/factura-content &> /dev/null
+echo "Cloning $1 content git..."
+git clone https://github.com/ppschweiz/$1-content &> /dev/null
 if [ $? -ne 0 ]
 then
-  echo "Error cloning factura-content"
+  echo "Error cloning $1-content"
   exit 4
 fi
 

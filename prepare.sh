@@ -2,7 +2,7 @@
 
 CURDIR="$(pwd)"
 TMPDIR='/tmp'
-TARGETDIR="$TMPDIR/factura"
+TARGETDIR="$TMPDIR/$1"
 
 rm -rf $TARGETDIR &> /dev/null
 
