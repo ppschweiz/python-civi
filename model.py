@@ -12,7 +12,7 @@
 # * Mahnungsdatum: custom_18
 # * Zahlungsdatum: custom_19
 # * Mahnstufe: custom_20
-# * ID Server Status: custom_21
+# * ID Server Status: custom_21 (deactivated: 0, activated: 1, reset: 11)
 
 import sys
 import os
@@ -135,6 +135,10 @@ class Person:
 			return 'en'
 		else:
 			return 'de'
+
+	def update_idserverstatus(self, status):
+		self.idserverstatus = status
+		update_entity(self.civicrm, 'Contact', self.civi_id, custom_21=self.idserverstatus)
 
 	def update_paymentdate(self, date):
 		self.paymentdate = date

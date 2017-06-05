@@ -29,6 +29,19 @@ person = Person(civicrm, member_id=member_id)
 checkout_content('bulletin');
 
 voteid = sys.argv[2]
-send_bulletin(person, voteid, True) 
+
+if sys.argv[3] == 'postal':
+	postal = True
+elif sys.argv[3] == 'mail':
+	postal = False
+else:
+	raise Exception()
+
+if len(sys.argv) >= 5 and (sys.argv[4] == 'HOT'):
+	dryrun = False
+else:
+	dryrun = True
+
+send_bulletin(person, voteid, postal, dryrun) 
 
 sys.stderr.write('done\n')

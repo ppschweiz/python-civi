@@ -18,6 +18,7 @@ from files import checkout_content
 from sendemail import notify_admin
 from memberids import assign_member_ids
 from factura import update_membership
+from factura import update_idserverstatus
 from errors import handle_error
 
 site_key = os.environ['CIVI_SITE_KEY']
@@ -31,6 +32,7 @@ def update_memberships(members, dryrun):
 		if member.isppsmember:
 			try:
 				update_membership(member, dryrun)
+				update_idserverstatus(member, dryrun)
 			except Exception as e:
 				handle_error(e, 'MemberId: ' + str(member.member_id))
 

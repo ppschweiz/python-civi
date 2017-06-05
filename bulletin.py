@@ -56,7 +56,8 @@ def format_date(language, date):
 def create_bulletin(person, voteid):
 	subprocess.check_call('./prepare.sh bulletin', shell=True)
 
-	security_code = sha256(bulletin_secret + str(person.member_id))
+	hashvalue = sha256(bulletin_secret + voteid + str(person.member_id))
+	security_code = hashvalue[0:8] + " " + hashvalue[8:16] + " " + hashvalue[16:24] + " " + hashvalue[24:32] + " " + hashvalue[32:40] + " " + hashvalue[40:48] + " " + hashvalue[48:56] + " " + hashvalue[56:64]
 	
 	csv = open("/tmp/bulletin/people.csv", "w")
 	csv.write(u'{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, 
@@ -77,7 +78,7 @@ def make_bulletin(person, voteid):
 	create_bulletin(person, voteid)
 	os.rename('/tmp/bulletin/bulletin.pdf', 'Bulletin.pdf')
 
-def send_bulletin(person, voteid, dryrun):
+def send_bulletin(person, voteid, postal, dryrun):
 	create_bulletin(person, voteid)
 		
 	if person.short_language() == 'fr':
@@ -92,9 +93,15 @@ def send_bulletin(person, voteid, dryrun):
 	keyid = get_keyid(person.email)
 	if keyid != None:
 		print(u'Key for {} email {} found: {}'.format(person.member_id, person.email, keyid))
-		send_message(person, voteid, dryrun, keyid, '/tmp/bulletin/bulletin.pdf', attachmentname)
+		if not postal:
+			send_message(person, voteid, dryrun, keyid, '/tmp/bulletin/bulletin.pdf', attachmentname)
+		else:
+			print('Not sending mail in postal mode')
 	else:
 		print(u'No key for {} email {}'. format(person.member_id, person.email))
-		postal_mail_file('/tmp/bulletin/bulletin.pdf', dryrun)
+		if postal:
+			postal_mail_file('/tmp/bulletin/bulletin.pdf', dryrun)
+		else:
+			print('Not sending letter in mail mode')
 
 

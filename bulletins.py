@@ -47,7 +47,7 @@ def update_pgpkeys(members):
 			keyfile.close()
 	subprocess.check_call('./import_gpg.sh ' + export_gpg_dir, shell=True)
 
-def process_bulletins(voteid, dryrun):
+def process_bulletins(voteid, postal, dryrun):
 	try:
 		checkout_content('bulletin')
 
@@ -61,7 +61,7 @@ def process_bulletins(voteid, dryrun):
 			for member in members:
 				if member.isppsmember and member.verified:
 					try:
-						send_bulletin(member, voteid, dryrun)
+						send_bulletin(member, voteid, postal, dryrun)
 						counter = counter + 1
 					except Exception as e:
 						handle_error(e, 'MemberId: ' + str(member.member_id))

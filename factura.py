@@ -148,6 +148,14 @@ def handle_member(person, dryrun):
 	else:
 		return 0
 
+def update_idserverstatus(person, dryrun):
+	if person.isppsmember and person.idserverstatus == 0:
+		if dryrun:
+			sys.stderr.write('Not updating id server status for {} due to dry run\n'.format(person.member_id));
+		else:
+			person.update_idserverstatus(1)
+			sys.stderr.write('Activated server status for {}\n'.format(person.member_id));
+
 def update_membership(person, dryrun):
 	now = datetime.datetime.now()
 	#has pay current factura => shold be active

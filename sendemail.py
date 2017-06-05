@@ -8,6 +8,7 @@ from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.encoders import encode_7or8bit
 
 smtp_server_address = os.environ['SMTP_SERVER_ADDRESS']
 smtp_server_port = os.environ['SMTP_SERVER_PORT']
@@ -19,7 +20,7 @@ def format_address(name, address):
 	return ('"' + Header(str(name), 'UTF-8').encode() + '" <' + address + '>')
 
 def send_encrypted_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None, attachment_name=None, sign=None, encrypt_for=None):
-	msg = MIMEMultipart('encrypted')
+	msg = MIMEMultipart('encrypted', protocol='application/pgp-encrypted')
 	msg['Subject'] = subject
 	msg['From'] = sender
 	msg['To'] = receipient
@@ -37,8 +38,7 @@ def send_encrypted_email(sender, receipient, subject, bodyhtml, bodytext, attach
 			mixed.attach(part)
 		alt = mixed
 	
-	version = MIMEText('Version: 1', 'plain', 'ascii')
-	version['Content-Type'] = 'application/pgp-encrypted'
+	version = MIMEApplication('Version: 1\n', 'pgp-encrypted', encode_7or8bit)
 	version['Content-Disposition'] = 'attachment'
 	msg.attach(version)
 
@@ -51,17 +51,17 @@ def send_encrypted_email(sender, receipient, subject, bodyhtml, bodytext, attach
 	if not encrypted_data.ok:
 		raise Exception('Encryption failed: ' + encrypted_data.stderr)
 
-	encrypted_mime = MIMEApplication(str(encrypted_data), Name='msg.asc')
+	encrypted_mime = MIMEApplication(str(encrypted_data), 'octet-stream', encode_7or8bit, Name='msg.asc')
 	encrypted_mime['Content-Disposition'] = 'inline; filename="msg.asc"'
 	msg.attach(encrypted_mime)
 
 	sys.stderr.write('Sending encrypted mail...\n')
 
-	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
-	s.starttls();
-	s.login(smtp_username, smtp_password);
-	s.sendmail(sender, receipient, msg.as_string())
-	s.quit()
+	#s = smtplib.SMTP(smtp_server_address, smtp_server_port)
+	#s.starttls();
+	#s.login(smtp_username, smtp_password);
+	#s.sendmail(sender, receipient, msg.as_string())
+	#s.quit()
 
 def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None, attachment_name=None):
 	msg = MIMEMultipart()
