@@ -57,11 +57,11 @@ def send_encrypted_email(sender, receipient, subject, bodyhtml, bodytext, attach
 
 	sys.stderr.write('Sending encrypted mail...\n')
 
-	#s = smtplib.SMTP(smtp_server_address, smtp_server_port)
-	#s.starttls();
-	#s.login(smtp_username, smtp_password);
-	#s.sendmail(sender, receipient, msg.as_string())
-	#s.quit()
+	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
+	s.starttls();
+	s.login(smtp_username, smtp_password);
+	s.sendmail(sender, receipient, msg.as_string())
+	s.quit()
 
 def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None, attachment_name=None):
 	msg = MIMEMultipart()
