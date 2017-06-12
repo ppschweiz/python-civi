@@ -81,13 +81,13 @@ def make_bulletin(person, voteid):
 
 def send_bulletin(person, voteid, postal, dryrun):
 	create_bulletin(person, voteid)
-		
+
 	if person.short_language() == 'fr':
-		attachmentname = 'Votation.pdf'
-	if person.short_language() == 'it':	
-		attachmentname = 'Votation.pdf'
-	if person.short_language() == 'en':	
-		attachmentname = 'Voting.pdf'
+		attachmentname = 'votation.pdf'
+	elif person.short_language() == 'it':	
+		attachmentname = 'votation.pdf'
+	elif person.short_language() == 'en':	
+		attachmentname = 'voting.pdf'
 	else:
 		attachmentname = 'Abstimmung.pdf'
 

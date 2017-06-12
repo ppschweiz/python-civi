@@ -101,9 +101,9 @@ def send_factura(person, date, reminderlevel, dryrun):
 	
 	if person.short_language() == 'fr':
 		attachmentname = 'facture.pdf'
-	if person.short_language() == 'it':	
+	elif person.short_language() == 'it':	
 		attachmentname = 'facture.pdf'
-	if person.short_language() == 'en':	
+	elif person.short_language() == 'en':	
 		attachmentname = 'bill.pdf'
 	else:
 		attachmentname = 'Rechnung.pdf'
