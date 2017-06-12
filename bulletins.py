@@ -22,7 +22,8 @@ from errors import handle_error
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
-url = os.environ['CIVI_API_URL'] 
+url = os.environ['CIVI_API_URL']
+ppv_id = int(os.environ['PPV_ID'])
 export_gpg_dir = '/tmp/gpgkeys'
 civicrm = CiviCRM(url, site_key, api_key, True)
 
@@ -60,11 +61,16 @@ def process_bulletins(voteid, postal, dryrun):
 			counter = 0
 			for member in members:
 				if member.isppsmember and member.verified:
-					try:
-						send_bulletin(member, voteid, postal, dryrun)
-						counter = counter + 1
-					except Exception as e:
-						handle_error(e, 'MemberId: ' + str(member.member_id))
+					if member.member_id == ppv_id:
+						sys.stderr.write('{} {} {} is not voting as ppv\n'.format(member.member_id, member.firstname, member.lastname))
+					elif not member.ppsmembership.active:
+						sys.stderr.write('{} {} {} has no active membership\n'.format(member.member_id, member.firstname, member.lastname))
+					else:
+						try:
+							send_bulletin(member, voteid, postal, dryrun)
+							counter = counter + 1
+						except Exception as e:
+							handle_error(e, 'MemberId: ' + str(member.member_id))
 			sys.stderr.write('{0} bulletins sent.\n'.format(counter))
 
 

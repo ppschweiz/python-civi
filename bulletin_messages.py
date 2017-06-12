@@ -19,11 +19,11 @@ from sendemail import notify_admin
 from sendemail import format_address
 from files import get_text
 
-sender_de = format_address(u'Piratenpartei Schweiz', 'info@piratenpartei.ch')
-sender_fr = format_address(u'Parti Pirate Suisse', 'info@partipirate.ch')
-sender_it = format_address(u'Partito Pirate Svizzera', 'info@partitopirata.ch')
-sender_en = format_address(u'Pirate Party Switzerland', 'info@pirateparty.ch')
-registry = format_address(u'Piratenpartei Schweiz', 'registrar@piratenpartei.ch')
+sender_de = format_address(u'PPS - Präsidium der Piratenversammlung', 'ppv@piratenpartei.ch')
+sender_fr = format_address(u'PPS - Préidence de l\'Assemblée Pirate', 'ppv@piratenpartei.ch')
+sender_it = format_address(u'PPS - Présidence de l\'Assemblée Pirate', 'ppv@piratenpartei.ch')
+sender_en = format_address(u'PPS - Präsidium der Piratenversammlung', 'ppv@piratenpartei.ch')
+registry = format_address(u'Piratenpartei Schweiz', 'ppv@piratenpartei.ch')
 testbox = format_address(u'Stefan Thöni', 'stefan.thoeni@piratenpartei.ch')
 senderkey = os.environ['SENDER_PGP_KEY']
 
