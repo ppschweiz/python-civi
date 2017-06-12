@@ -49,7 +49,7 @@ def send_message(person, voteid, dryrun, pgpkey, attachement=None, attachementna
 	encrypt_for = [senderkey, pgpkey]
 	receipient = format_address(person.firstname + u' ' + person.lastname, person.email)
 	if not dryrun:
-		send_encrypted_email(receipient, registry, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])
+		send_encrypted_email(receipient, testbox, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])
 		send_encrypted_email(sender, receipient, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])
 	else:
 		send_encrypted_email(receipient, testbox, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])
