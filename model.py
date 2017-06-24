@@ -96,6 +96,13 @@ class Person:
 				membership = Membership(civicrm, data=membership_data)
 				self.memberships.append(membership)
 
+		if 'emails' in kwargs:
+			if kwargs['emails'] != None:
+				self.emails = list();
+				for email in kwargs['emails']:
+					if email.contact_id == self.civi_id:
+						self.emails.append(email)	
+
 		self.section = type('Department', (), {})()
 		self.section.number = 0
 		self.section.fullname = ''
@@ -217,4 +224,17 @@ class Membership:
 			status = '4'
 
 		update_entity(self.civicrm, 'Membership', self.civi_id, is_override='1', status_id=status, start_date=start, end_date=end) 
+
+class Email:
+	def __init__(self, civicrm, **kwargs):
+		if 'data' in kwargs:
+			data = kwargs['data']
+		else:
+			raise ValueError('no data provided')
+
+		self.civicrm = civicrm
+		self.civi_id = int(data['id']);
+		self.contact_id = int(data['contact_id']);
+		self.email = data['email']
+		self.active = (data['is_primary'] == '1')
 
