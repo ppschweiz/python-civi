@@ -12,17 +12,17 @@ import datetime
 import subprocess
 import hashlib
 from string import Template
+from time import sleep
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from util import parse_datetime
-from util import trim
-from model import Person
-from model import Membership
-from sendemail import notify_admin
-from factura_messages import send_message
-from time import sleep
-from files import get_text
+from .util import parse_datetime
+from .util import trim
+from .model import Person
+from .model import Membership
+from .sendemail import notify_admin
+from .factura_messages import send_message
+from .files import get_text
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']

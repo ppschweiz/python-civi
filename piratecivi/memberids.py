@@ -11,10 +11,10 @@ import os
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from loader import load_all
-from updater import update_entity
-from factura_messages import send_message
-from sendemail import notify_admin
+from .loader import load_all
+from .updater import update_entity
+from .factura_messages import send_message
+from .sendemail import notify_admin
 
 def assign_member_ids(civicrm, members, dryrun):
 	#run through all contacts and determine the current highest member id

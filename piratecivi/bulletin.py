@@ -16,16 +16,16 @@ from string import Template
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from util import parse_datetime
-from util import trim
-from util import sha256
-from model import Person
-from model import Membership
-from sendemail import notify_admin
-from bulletin_messages import send_message
 from time import sleep
-from files import get_text
-from pingen import postal_mail_file
+from .util import parse_datetime
+from .util import trim
+from .util import sha256
+from .model import Person
+from .model import Membership
+from .sendemail import notify_admin
+from .bulletin_messages import send_message
+from .files import get_text
+from .pingen import postal_mail_file
 
 bulletin_secret = os.environ['BULLETIN_SECRET'] 
 site_key = os.environ['CIVI_SITE_KEY']

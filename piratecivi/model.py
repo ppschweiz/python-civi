@@ -16,16 +16,16 @@
 
 import sys
 import os
+import datetime
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from util import is_number
-from util import parse_datetime
-from util import parse_date
-from util import parse_int
-from departments import get_departments
-import datetime
-from updater import update_entity
+from .util import is_number
+from .util import parse_datetime
+from .util import parse_date
+from .util import parse_int
+from .departments import get_departments
+from .updater import update_entity
 
 def get_required_fields_person():
 	return 'contact_id,external_identifier,first_name,last_name,email,country,city,street_address,postal_code,phone,state_province,preferred_language,gender_id,custom_7,custom_12,custom_17,custom_18,custom_19,custom_20,custom_21'

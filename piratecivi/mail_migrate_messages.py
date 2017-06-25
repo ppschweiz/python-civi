@@ -10,14 +10,14 @@ import sys
 import os
 import datetime
 from string import Template
-from util import trim
-from util import sha1
-from model import Person
-from model import Membership
-from sendemail import send_email
-from sendemail import notify_admin
-from sendemail import format_address
-from files import get_text
+from .util import trim
+from .util import sha1
+from .model import Person
+from .model import Membership
+from .sendemail import send_email
+from .sendemail import notify_admin
+from .sendemail import format_address
+from .files import get_text
 
 sender_de = format_address(u'Piratenpartei Schweiz', 'info@piratenpartei.ch')
 sender_fr = format_address(u'Parti Pirate Suisse', 'info@partipirate.ch')

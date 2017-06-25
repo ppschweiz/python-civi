@@ -8,7 +8,7 @@
 
 import sys
 import os
-from mail_migrations import process_migrations
+from piratecivi.mail_migrations import process_migrations
 
 event = sys.argv[1]
 

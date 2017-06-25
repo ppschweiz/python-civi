@@ -8,18 +8,18 @@
 
 import sys
 import os
-from pythoncivicrm.pythoncivicrm import CiviCRM
-from pythoncivicrm.pythoncivicrm import CivicrmError
-from pythoncivicrm.pythoncivicrm import matches_required
-from util import is_number
-from model import Person
-from model import Membership
-from factura import handle_member
-from loader import load_all
-from util import parse_date
 import datetime
 import csv
 import random
+from pythoncivicrm.pythoncivicrm import CiviCRM
+from pythoncivicrm.pythoncivicrm import CivicrmError
+from pythoncivicrm.pythoncivicrm import matches_required
+from piratecivi.util import is_number
+from piratecivi.model import Person
+from piratecivi.model import Membership
+from piratecivi.factura import handle_member
+from piratecivi.loader import load_all
+from piratecivi.util import parse_date
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']

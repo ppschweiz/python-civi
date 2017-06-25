@@ -13,10 +13,10 @@ from string import Template
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from util import trim
-from model import Person
-from sendemail import notify_admin
-from mail_migrate_messages import send_message
+from .util import trim
+from .model import Person
+from .sendemail import notify_admin
+from .mail_migrate_messages import send_message
 
 bulletin_secret = os.environ['BULLETIN_SECRET'] 
 site_key = os.environ['CIVI_SITE_KEY']

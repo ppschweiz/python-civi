@@ -11,8 +11,8 @@ import os
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from loader import load_all
-from memberids import assign_member_ids
+from piratecivi.loader import load_all
+from piratecivi.memberids import assign_member_ids
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']

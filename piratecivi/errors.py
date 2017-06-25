@@ -9,7 +9,7 @@
 import sys
 import os
 import traceback
-from sendemail import notify_admin
+from .sendemail import notify_admin
 
 def handle_error(e, additional=''):
 	msg = '{}\n{}\n{}\n{}'.format(type(e), e, traceback.format_exc(), additional)

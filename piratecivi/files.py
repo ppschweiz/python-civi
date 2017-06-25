@@ -11,9 +11,9 @@ import os
 import subprocess
 import datetime
 import codecs
-from util import parse_datetime
-from util import trim
-from sendemail import notify_admin
+from .util import parse_datetime
+from .util import trim
+from .sendemail import notify_admin
 
 TMP_DIR = '/tmp'
 

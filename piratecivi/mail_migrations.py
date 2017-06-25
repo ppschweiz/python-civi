@@ -11,13 +11,13 @@ import os
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from loader import load_all
-from mail_migrate import send_migration
-from files import check_not_after
-from files import checkout_content
-from sendemail import notify_admin
-from factura import update_membership
-from errors import handle_error
+from .loader import load_all
+from .mail_migrate import send_migration
+from .files import check_not_after
+from .files import checkout_content
+from .sendemail import notify_admin
+from .factura import update_membership
+from .errors import handle_error
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']

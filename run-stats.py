@@ -8,7 +8,7 @@
 
 import sys
 import os
-from stats import process_stats
+from piratecivi.stats import process_stats
 
 process_stats();
 

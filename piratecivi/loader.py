@@ -11,10 +11,10 @@ import os
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from model import Person
-from model import Membership
-from model import Email
-from model import get_required_fields_person
+from .model import Person
+from .model import Membership
+from .model import Email
+from .model import get_required_fields_person
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']

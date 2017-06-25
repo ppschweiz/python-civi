@@ -11,10 +11,10 @@ import os
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from loader import load_all
-from sendemail import send_email
-from sendemail import notify_admin
-from errors import handle_error
+from .loader import load_all
+from .sendemail import send_email
+from .sendemail import notify_admin
+from .errors import handle_error
 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']

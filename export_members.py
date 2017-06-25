@@ -12,9 +12,9 @@ import codecs
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
-from loader import load_all
-from loader import load_persons
-from model import get_required_fields_person
+from piratecivi.loader import load_all
+from piratecivi.loader import load_persons
+from piratecivi.model import get_required_fields_person
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 

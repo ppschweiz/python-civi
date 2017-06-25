@@ -8,7 +8,7 @@
 
 import sys
 import os
-from facturer import process_facturas
+from piratecivi.facturer import process_facturas
 
 if len(sys.argv) >= 2 and (sys.argv[1] == 'HOT'):
 	process_facturas(False)

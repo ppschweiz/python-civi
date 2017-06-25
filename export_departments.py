@@ -9,7 +9,7 @@
 import sys
 import os
 import codecs
-from departments import get_departments
+from piratecivi.departments import get_departments
 
 def get_number(dep):
 	return dep.number

@@ -2,7 +2,7 @@
 
 import sys
 import os
-from pingen_api import Pingen
+from .pingen_api import Pingen
 
 token = os.environ['PINGEN_TOKEN']
 pingen = Pingen(token, staging=False)
