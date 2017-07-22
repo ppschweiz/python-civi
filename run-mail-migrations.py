@@ -9,6 +9,7 @@
 import sys
 import os
 from piratecivi.mail_migrations import process_migrations
+from piratecivi.files import readfile
 
 event = sys.argv[1]
 
@@ -17,6 +18,16 @@ if len(sys.argv) >= 3 and (sys.argv[2] == 'HOT'):
 else:
 	dryrun = True
 
-process_migrations(event, dryrun)
+if len(sys.argv) >= 4:
+	passwords = {}
+	text = readfile(sys.argv[3])
+	for line in text.splitlines():
+		mail = str.split(line, ',')[0]
+		password = str.split(line, ',')[1]
+		passwords[mail] = password
+else:
+	passwords = None
+
+process_migrations(event, passwords, dryrun)
 
 sys.stderr.write('done\n')
