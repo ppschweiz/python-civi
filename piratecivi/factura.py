@@ -60,13 +60,17 @@ def create_factura(person, date, slip):
 	else:
 		year = date.year
 
+	country = person.country;
+	if country == 'Schweiz' or country == 'Suisse':
+		country = 'Switzerland'
+
 	csv = open("/tmp/factura/people.csv", "w")
 	csv.write(u'{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{};{}'.format(
 		person.member_id, 
 		person.lastname, 
 		person.firstname, 
 		person.email, 
-		person.country, 
+		country, 
 		person.street, 
 		person.postalcode, 
 		person.city, 
