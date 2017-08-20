@@ -59,7 +59,10 @@ def send_encrypted_email(sender, receipient, subject, bodyhtml, bodytext, attach
 
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
 	s.starttls();
-	s.login(smtp_username, smtp_password);
+
+	if smtp_username != "":
+		s.login(smtp_username, smtp_password);
+
 	s.sendmail(sender, receipient, msg.as_string())
 	s.quit()
 
