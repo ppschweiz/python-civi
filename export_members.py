@@ -74,7 +74,11 @@ for member in members:
 		sys.stdout.write(member.email + ",")
 		sys.stdout.write(status + ",")
 		sys.stdout.write(department + ",")
-		sys.stdout.write(str(member.verified) + ",\"\"\n")
+		if member.verified:
+			sys.stdout.write("1")
+		else:
+			sys.stdout.write("0")
+		sys.stdout.write(",\"\"\n")
 		if member.idserverstatus >= 10:
 			reset_file.write(str(member.member_id) + '\n')
 			member.update_idserverstatus(member.idserverstatus - 10)
