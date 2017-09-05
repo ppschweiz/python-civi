@@ -53,7 +53,8 @@ def process_facturas(dryrun):
 					except Exception as e:
 						handle_error(e, 'MemberId: ' + str(member.member_id))
 			sys.stderr.write('{0} facturas sent.\n'.format(counter))
-			update_memberships(members, dryrun)
+
+		update_memberships(members, dryrun)
 
 	except Exception as e:
 		handle_error(e)
