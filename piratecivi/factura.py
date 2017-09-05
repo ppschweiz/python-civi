@@ -163,7 +163,7 @@ def update_idserverstatus(person, dryrun):
 def update_membership(person, dryrun):
 	now = datetime.datetime.now()
 	#has payed current factura => shold be active
-	if person.facturadate >= (now + datetime.timedelta(days=-1095) and person.paymentdate >= person.facturadate:
+	if (person.facturadate >= (now + datetime.timedelta(days=-1095))) and (person.paymentdate >= person.facturadate):
 		if not person.ppsmembership.active:
 			if not dryrun:
 				person.update_memberships(True, person.paymentdate, person.facturadate + datetime.timedelta(days=425))
