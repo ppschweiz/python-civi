@@ -1,2 +1,7 @@
 keys.sh
 *.pyc
+*.csv
+*.pdf
+*.txt
+*.asc
+test*

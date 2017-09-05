@@ -12,8 +12,22 @@ from email.encoders import encode_7or8bit
 
 smtp_server_address = os.environ['SMTP_SERVER_ADDRESS']
 smtp_server_port = os.environ['SMTP_SERVER_PORT']
-smtp_username = os.environ['SMTP_USERNAME']
-smtp_password = os.environ['SMTP_PASSWORD']
+
+if 'SMTP_USERNAME' in os.environ:
+	smtp_username = os.environ['SMTP_USERNAME']
+else:
+	smtp_username = ''
+
+if 'SMTP_PASSWORD' in os.environ:
+	smtp_password = os.environ['SMTP_PASSWORD']
+else:
+    smtp_password = ''
+
+if 'SMTP_STARTTLS' in os.environ:
+	smtp_starttls = (os.environ['SMTP_STARTTLS'] != '0')
+else:
+	smtp_starttls = True
+
 gpg = gnupg.GPG()
 
 def format_address(name, address):
@@ -58,9 +72,11 @@ def send_encrypted_email(sender, receipient, subject, bodyhtml, bodytext, attach
 	sys.stderr.write('Sending encrypted mail...\n')
 
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
-	s.starttls();
 
-	if smtp_username != "":
+	if smtp_starttls:
+		s.starttls();
+
+	if smtp_username != '':
 		s.login(smtp_username, smtp_password);
 
 	s.sendmail(sender, receipient, msg.as_string())
@@ -85,10 +101,15 @@ def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None,
 	alt.attach(MIMEText(bodyhtml, 'html', 'utf-8'))
 
 	sys.stderr.write('Sending mail...\n')
-
+	
 	s = smtplib.SMTP(smtp_server_address, smtp_server_port)
-	s.starttls();
-	s.login(smtp_username, smtp_password);
+
+	if smtp_starttls:
+		s.starttls();
+
+	if smtp_username != '':
+		s.login(smtp_username, smtp_password);
+
 	s.sendmail(sender, receipient, msg.as_string())
 	s.quit()
 
