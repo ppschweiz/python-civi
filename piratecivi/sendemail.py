@@ -82,11 +82,17 @@ def send_encrypted_email(sender, receipient, subject, bodyhtml, bodytext, attach
 	s.sendmail(sender, receipient, msg.as_string())
 	s.quit()
 
-def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None, attachment_name=None):
+def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None, attachment_name=None, cc=None):
 	msg = MIMEMultipart()
 	msg['Subject'] = subject
 	msg['From'] = sender
 	msg['To'] = receipient
+	receipients = []
+	receipients.append(receipient)
+
+	if cc != None:
+		msg['CC'] = cc
+		receipients.append(cc)
 
 	if attachment != None:
 		with open(attachment, "rb") as fil:
@@ -110,7 +116,7 @@ def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None,
 	if smtp_username != '':
 		s.login(smtp_username, smtp_password);
 
-	s.sendmail(sender, receipient, msg.as_string())
+	s.sendmail(sender, receipients, msg.as_string())
 	s.quit()
 
 def notify_admin(subject, text):

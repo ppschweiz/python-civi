@@ -52,8 +52,7 @@ def send_message(person, mode, dryrun, attachement=None, attachementname=None):
 
 	receipient = format_address(person.firstname + u' ' + person.lastname, person.email)
 	if not dryrun:
-		send_email(receipient, registry, subject, html, text, attachement, attachementname)
-		send_email(sender, receipient, subject, html, text, attachement, attachementname)
+		send_email(sender, receipient, subject, html, text, attachement, attachementname, registry)
 	else:
 		send_email(receipient, testbox, subject, html, text, attachement, attachementname)
 		sys.stderr.write('Not sending mail due to dry run\n');
