@@ -22,7 +22,7 @@ def get_departments():
 	add_dep(deps, 3, 'PPZH', u'Piratenpartei Zürich','PPS', 80)
 	add_dep(deps, 3, 'PPZH-Student', u'Piratenpartei Zürich','PPS', 80)
 	add_dep(deps, 4, 'PPBE', u'Piratenpartei Bern', 'PPS', 60)
-	add_dep(deps, 5, 'PPZS', u'Piratenpartei Zentralschweiz', 'PPS', 120)
+	add_dep(deps, 5, 'PPZS', u'Piratenpartei Zentralschweiz', 'PPS', 20)
 	add_dep(deps, 5, 'PPZS-Student', u'Piratenpartei Zentralschweiz', 'PPS', 20)
 	add_dep(deps, 6, 'PPBB', u'Piratenpartei beider Basel', 'PPS', 20)
 	add_dep(deps, 7, 'PPOS', u'Piratenpartei SGARAI', 'PPS', 25)
