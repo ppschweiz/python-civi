@@ -31,7 +31,7 @@ def assign_member_ids(civicrm, members, dryrun):
 	for member in members:
 		if len(member.memberships) > 0 and member.member_id < 1:
 			high_member_id = high_member_id + 1
-			member.member_id = str(high_member_id)
+			member.member_id = int(high_member_id)
 			if not dryrun:
 				update_entity(civicrm, 'Contact', str(member.civi_id), external_identifier=str(member.member_id))
 				sys.stderr.write('Assiging member id {} to contact {}\n'.format(member.member_id, member.civi_id))
