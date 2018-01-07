@@ -16,6 +16,7 @@ from string import Template
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
+from piratecivi.bulletins_csv import note_sent_bulletin
 from time import sleep
 from .util import parse_datetime
 from .util import trim
@@ -96,12 +97,14 @@ def send_bulletin(person, voteid, postal, dryrun):
 		sys.stderr.write(u'Key for {} email {} found: {}\n'.format(person.member_id, person.email, keyid))
 		if not postal:
 			send_message(person, voteid, dryrun, keyid, '/tmp/bulletin/bulletin.pdf', attachmentname)
+			note_sent_bulletin(voteid, person.member_id, 'mail')
 		else:
 			sys.stderr.write('Not sending mail in postal mode\n')
 	else:
 		sys.stderr.write(u'No key for {} email {}\n'. format(person.member_id, person.email))
 		if postal:
 			postal_mail_file('/tmp/bulletin/bulletin.pdf', dryrun, 1)
+			note_sent_bulletin(voteid, person.member_id, 'postal')
 		else:
 			sys.stderr.write('Not sending letter in mail mode\n')
 

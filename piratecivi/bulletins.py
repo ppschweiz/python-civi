@@ -12,6 +12,7 @@ import subprocess
 from pythoncivicrm.pythoncivicrm import CiviCRM
 from pythoncivicrm.pythoncivicrm import CivicrmError
 from pythoncivicrm.pythoncivicrm import matches_required
+from piratecivi.bulletins_csv import needs_bulletin
 from .loader import load_all
 from .bulletin import send_bulletin
 from .files import check_not_after
@@ -60,7 +61,7 @@ def process_bulletins(voteid, postal, dryrun):
 			sys.stderr.write('Sending bulletin to all verified members...\n')
 			counter = 0
 			for member in members:
-				if member.isppsmember and member.verified:
+				if member.isppsmember and member.verified and needs_bulletin(voteid, member.member_id) :
 					if member.member_id == ppv_id:
 						sys.stderr.write('{} {} {} is not voting as ppv\n'.format(member.member_id, member.firstname, member.lastname))
 					elif not member.ppsmembership.active:
