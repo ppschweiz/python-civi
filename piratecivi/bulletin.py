@@ -32,6 +32,7 @@ bulletin_secret = os.environ['BULLETIN_SECRET']
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
+postal_speed = int(os.environ['POSTAL_SPEED'])
 civicrm = CiviCRM(url, site_key, api_key, True)
 gpg = gnupg.GPG()
 address = re.compile('^.*\ <(.*)\>$')
@@ -54,12 +55,11 @@ def format_date(language, date):
 	else:
 		return u'{:04d}-{:02d}-{:02d}'.format(date.year, date.month, date.day)
 
-def create_bulletin(person, voteid):
+def create_bulletin(person, voteid, hashvalue):
 	subprocess.check_call('./prepare.sh bulletin', shell=True)
 
-	hashvalue = sha256(bulletin_secret + voteid + str(person.member_id))
 	security_code = hashvalue[0:8] + " " + hashvalue[8:16] + " " + hashvalue[16:24] + " " + hashvalue[24:32] + " " + hashvalue[32:40] + " " + hashvalue[40:48] + " " + hashvalue[48:56] + " " + hashvalue[56:64]
-	print(u'{};{};{}'.format(voteid, str(person.member_id), security_code))
+	#print(u'{};{};{}'.format(voteid, str(person.member_id), security_code))
 	
 	csv = open("/tmp/bulletin/people.csv", "w")
 	csv.write(u'{};{};{};{};{};{};{};{};{};{}'.format(person.member_id, 
@@ -81,7 +81,9 @@ def make_bulletin(person, voteid):
 	os.rename('/tmp/bulletin/bulletin.pdf', 'Bulletin.pdf')
 
 def send_bulletin(person, voteid, postal, dryrun):
-	create_bulletin(person, voteid)
+	hashvalue = sha256(bulletin_secret + voteid + str(person.member_id))
+
+	create_bulletin(person, voteid, hashvalue)
 
 	if person.short_language() == 'fr':
 		attachmentname = 'votation.pdf'
@@ -97,14 +99,14 @@ def send_bulletin(person, voteid, postal, dryrun):
 		sys.stderr.write(u'Key for {} email {} found: {}\n'.format(person.member_id, person.email, keyid))
 		if not postal:
 			send_message(person, voteid, dryrun, keyid, '/tmp/bulletin/bulletin.pdf', attachmentname)
-			note_sent_bulletin(voteid, person.member_id, 'mail')
+			note_sent_bulletin(voteid, person.member_id, 'mail', hashvalue)
 		else:
 			sys.stderr.write('Not sending mail in postal mode\n')
 	else:
 		sys.stderr.write(u'No key for {} email {}\n'. format(person.member_id, person.email))
 		if postal:
-			postal_mail_file('/tmp/bulletin/bulletin.pdf', dryrun, 1)
-			note_sent_bulletin(voteid, person.member_id, 'postal')
+			postal_mail_file('/tmp/bulletin/bulletin.pdf', dryrun, postal_speed)
+			note_sent_bulletin(voteid, person.member_id, 'postal' + str(postal_speed), hashvalue)
 		else:
 			sys.stderr.write('Not sending letter in mail mode\n')
 

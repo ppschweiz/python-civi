@@ -26,9 +26,9 @@ def needs_bulletin(voteid, member_id):
 					return False
 	return True
 
-def note_sent_bulletin(voteid, member_id, bulletin_type):
+def note_sent_bulletin(voteid, member_id, bulletin_type, hashvalue):
 	filename = datadir + voteid + csvending
 	with open(filename, 'a', newline='') as csvfile:
 		csvwriter = csv.writer(csvfile, delimiter=',', quotechar='\"', quoting=csv.QUOTE_MINIMAL)
-		csvwriter.writerow([str(member_id), bulletin_type,  datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+		csvwriter.writerow([str(member_id), bulletin_type,  datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), hashvalue])
 

@@ -61,11 +61,13 @@ def process_bulletins(voteid, postal, dryrun):
 			sys.stderr.write('Sending bulletin to all verified members...\n')
 			counter = 0
 			for member in members:
-				if member.isppsmember and member.verified and needs_bulletin(voteid, member.member_id) :
+				if member.isppsmember and member.verified:
 					if member.member_id == ppv_id:
 						sys.stderr.write('{} {} {} is not voting as ppv\n'.format(member.member_id, member.firstname, member.lastname))
 					elif not member.ppsmembership.active:
 						sys.stderr.write('{} {} {} has no active membership\n'.format(member.member_id, member.firstname, member.lastname))
+					elif not needs_bulletin(voteid, member.member_id):
+						sys.stderr.write('{} {} {} already got his voting material\n'.format(member.member_id, member.firstname, member.lastname))
 					else:
 						try:
 							send_bulletin(member, voteid, postal, dryrun)

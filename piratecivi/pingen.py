@@ -24,5 +24,5 @@ def postal_mail_file(filename, dryrun, speed):
 	if dryrun:
 		sys.stderr.write(u'Letter uploaded but not mailed to {}\n'.format(address))
 	else:
-		sys.stderr.write(u'Letter mailed to {}'.format(address))
+		sys.stderr.write(u'Letter mailed to {}\n'.format(address))
 

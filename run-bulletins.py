@@ -8,7 +8,7 @@
 
 import sys
 import os
-from bulletins import process_bulletins
+from piratecivi.bulletins import process_bulletins
 
 voteid = sys.argv[1]
 
