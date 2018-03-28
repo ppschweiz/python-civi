@@ -24,7 +24,7 @@ sender_fr = format_address(u'PPS - Préidence de l\'Assemblée Pirate', 'ppv@pir
 sender_it = format_address(u'PPS - Présidence de l\'Assemblée Pirate', 'ppv@piratenpartei.ch')
 sender_en = format_address(u'PPS - Präsidium der Piratenversammlung', 'ppv@piratenpartei.ch')
 registry = format_address(u'Piratenpartei Schweiz', 'ppv@piratenpartei.ch')
-testbox = format_address(u'Stefan Thöni', 'stefan.thoeni@piratenpartei.ch')
+testbox = format_address(os.environ['TESTBOX_NAME'], os.environ['TESTBOX_MAIL'])
 senderkey = os.environ['SENDER_PGP_KEY']
 
 def format_message(person, voteid, extension):

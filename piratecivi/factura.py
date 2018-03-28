@@ -11,6 +11,8 @@ import os
 import datetime
 import subprocess
 import hashlib
+import re
+import gnupg
 from string import Template
 from time import sleep
 from pythoncivicrm.pythoncivicrm import CiviCRM
@@ -28,6 +30,18 @@ site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
+gpg = gnupg.GPG()
+address = re.compile('^.*\ <(.*)\>$')
+
+def get_keyid(receipient):
+    keys = gpg.list_keys(False)
+    for key in keys:
+        if key['trust'] in ['u', 'f']:
+            for uid in key['uids']:
+                match = address.match(uid)
+                if receipient == match.group(1):
+                    return key['keyid']
+    return None
 
 def get_factura_ref(person, year):
 	return u'10000{:06d}{:04d}0'.format(person.member_id, year)
@@ -112,7 +126,8 @@ def send_factura(person, date, reminderlevel, dryrun):
 	else:
 		attachmentname = 'Rechnung.pdf'
 
-	send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname)
+	keyid = get_keyid(person.email)
+	send_message(person, mode, dryrun, '/tmp/factura/factura.pdf', attachmentname, pgpkey=keyid)
 
 def handle_member(person, dryrun):
 	now = datetime.datetime.now()

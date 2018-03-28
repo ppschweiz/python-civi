@@ -14,7 +14,8 @@ from .util import trim
 from .util import sha1
 from .model import Person
 from .model import Membership
-from .sendemail import send_email
+from .sendemail import send_signed_email
+from .sendemail import send_encrypted_email
 from .sendemail import notify_admin
 from .sendemail import format_address
 from .files import get_text
@@ -26,7 +27,8 @@ sender_fr = format_address(u'Parti Pirate Suisse', 'info@partipirate.ch')
 sender_it = format_address(u'Partito Pirate Svizzera', 'info@partitopirata.ch')
 sender_en = format_address(u'Pirate Party Switzerland', 'info@pirateparty.ch')
 registry = format_address(u'Piratenpartei Schweiz', 'registrar@piratenpartei.ch')
-testbox = format_address(u'Stefan Thöni', 'stefan.thoeni@piratenpartei.ch')
+testbox = format_address(os.environ['TESTBOX_NAME'], os.environ['TESTBOX_MAIL'])
+senderkey = os.environ['SENDER_PGP_KEY']
 
 def build_paylink(person):
 	return paylink_base + u'/pay#' + sha1(paylink_secret + u':paylink/' + str(person.member_id))[:20] + "/" + str(person.member_id)
@@ -36,7 +38,7 @@ def format_message(person, mode, extension):
 	template = Template(text)
 	return template.substitute(GREET=person.greeting, PAYURL=build_paylink(person))
 
-def send_message(person, mode, dryrun, attachement=None, attachementname=None):
+def send_message(person, mode, dryrun, attachement=None, attachementname=None, pgpkey=None):
 	text = format_message(person, mode, 'txt')
 	html = format_message(person, mode, 'html')
 	subject = trim(format_message(person, mode, 'subject'))
@@ -52,8 +54,14 @@ def send_message(person, mode, dryrun, attachement=None, attachementname=None):
 
 	receipient = format_address(person.firstname + u' ' + person.lastname, person.email)
 	if not dryrun:
-		send_email(sender, receipient, subject, html, text, attachement, attachementname, registry)
+		if pgpkey == None:
+			send_signed_email(sender, receipient, subject, html, text, senderkey, attachement, attachementname, registry)
+		else:
+			send_encrypted_email(sender, receipient, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])
 	else:
-		send_email(receipient, testbox, subject, html, text, attachement, attachementname)
+		if pgpkey == None:
+			send_signed_email(receipient, testbox, subject, html, text, senderkey, attachement, attachementname)
+		else:
+			send_encrypted_email(receipient, testbox, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])
 		sys.stderr.write('Not sending mail due to dry run\n');
 
