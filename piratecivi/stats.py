@@ -16,6 +16,7 @@ from .sendemail import send_email
 from .sendemail import notify_admin
 from .errors import handle_error
 
+stats_mail = os.environ['STATS_MAIL_ADDRESS'] 
 site_key = os.environ['CIVI_SITE_KEY']
 api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
@@ -53,7 +54,7 @@ def process_stats():
 			line = u'{}: {} Mitglieder, {} Stimmberechtigte, {} Akkreditierte\n'.format(name, stats[name].members, stats[name].voting, stats[name].verified)
 			msg += line
 	
-		send_email(u'info@piratenpartei.ch', u'stefan.thoeni@piratenpartei.ch', u'Mitgliederstatstik', msg.replace(u'\n', u'<br/>'), msg)
+		send_email(u'info@piratenpartei.ch', stats_mail, u'Mitgliederstatstik', msg.replace(u'\n', u'<br/>'), msg)
 
 	except Exception as e:
 		handle_error(e)

@@ -13,6 +13,7 @@ export SMTP_PASSWORD="secret!"
 
 # Mail address where an admin is notified of problems
 export ADMIN_MAIL_ADDRESS="givenname.surname@piratenpartei.ch"
+export STATS_MAIL_ADDRESS"=givenname.surname@piratenpartei.ch"
 
 # Paylink API credentials (Bitpay, credit card)
 export PAYLINK_BASE="https://www.piratenpartei.ch"

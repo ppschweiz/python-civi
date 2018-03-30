@@ -34,6 +34,8 @@ The following variables must be defined for the tool to work.
 
 `ADMIN_MAIL_ADDRESS` is the mail address where an admin is notified of problems.
 
+`STATS_MAIL_ADDRESS` is the mail address where weekly statistics are sent.
+
 ### Paylink API credentials (Bitpay, credit card)
 
 `PAYLINK_BASE` is the URL on the main website where the payment can be made.
