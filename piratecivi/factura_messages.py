@@ -14,6 +14,7 @@ from .util import trim
 from .util import sha1
 from .model import Person
 from .model import Membership
+from .sendemail import send_email
 from .sendemail import send_signed_email
 from .sendemail import send_encrypted_email
 from .sendemail import notify_admin
@@ -28,7 +29,11 @@ sender_it = format_address(u'Partito Pirate Svizzera', 'info@partitopirata.ch')
 sender_en = format_address(u'Pirate Party Switzerland', 'info@pirateparty.ch')
 registry = format_address(u'Piratenpartei Schweiz', 'registrar@piratenpartei.ch')
 testbox = format_address(os.environ['TESTBOX_NAME'], os.environ['TESTBOX_MAIL'])
-senderkey = os.environ['SENDER_PGP_KEY']
+
+if 'MEMBERS_SENDER_PGP_KEY' in os.environ:
+	senderkey = os.environ['MEMBERS_SENDER_PGP_KEY']
+else:
+	senderkey = None
 
 def build_paylink(person):
 	return paylink_base + u'/pay#' + sha1(paylink_secret + u':paylink/' + str(person.member_id))[:20] + "/" + str(person.member_id)
@@ -54,12 +59,16 @@ def send_message(person, mode, dryrun, attachement=None, attachementname=None, p
 
 	receipient = format_address(person.firstname + u' ' + person.lastname, person.email)
 	if not dryrun:
-		if pgpkey == None:
+		if senderkey == None:
+			send_email(sender, receipient, subject, html, text, attachement, attachementname, registry);
+		elif pgpkey == None:
 			send_signed_email(sender, receipient, subject, html, text, senderkey, attachement, attachementname, registry)
 		else:
 			send_encrypted_email(sender, receipient, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])
 	else:
-		if pgpkey == None:
+		if senderkey == None:
+			send_email(receipient, testbox, subject, html, text, attachement, attachementname);
+		elif pgpkey == None:
 			send_signed_email(receipient, testbox, subject, html, text, senderkey, attachement, attachementname)
 		else:
 			send_encrypted_email(receipient, testbox, subject, html, text, attachement, attachementname, sign=senderkey, encrypt_for=[pgpkey,senderkey])

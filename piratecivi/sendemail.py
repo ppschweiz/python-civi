@@ -12,6 +12,7 @@ from email.encoders import encode_7or8bit
 
 smtp_server_address = os.environ['SMTP_SERVER_ADDRESS']
 smtp_server_port = os.environ['SMTP_SERVER_PORT']
+admin_mail = os.environ['ADMIN_MAIL_ADDRESS']
 
 if 'SMTP_USERNAME' in os.environ:
 	smtp_username = os.environ['SMTP_USERNAME']
@@ -162,4 +163,4 @@ def send_email(sender, receipient, subject, bodyhtml, bodytext, attachment=None,
 	s.quit()
 
 def notify_admin(subject, text):
-	send_email(u'info@piratenpartei.ch', u'stefan.thoeni@piratenpartei.ch', subject, text.replace(u'<', u'&lt;').replace(u'\n', u'<br/>'), text)
+	send_email(u'info@piratenpartei.ch', admin_mail, subject, text.replace(u'<', u'&lt;').replace(u'\n', u'<br/>'), text)

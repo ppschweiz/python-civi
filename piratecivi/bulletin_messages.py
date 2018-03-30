@@ -25,7 +25,7 @@ sender_it = format_address(u'PPS - Présidence de l\'Assemblée Pirate', 'ppv@pi
 sender_en = format_address(u'PPS - Präsidium der Piratenversammlung', 'ppv@piratenpartei.ch')
 registry = format_address(u'Piratenpartei Schweiz', 'ppv@piratenpartei.ch')
 testbox = format_address(os.environ['TESTBOX_NAME'], os.environ['TESTBOX_MAIL'])
-senderkey = os.environ['SENDER_PGP_KEY']
+senderkey = os.environ['VOTING_SENDER_PGP_KEY']
 
 def format_message(person, voteid, extension):
 	text = get_text('bulletin', voteid + '/' + person.short_language(), 'invitation', extension)
