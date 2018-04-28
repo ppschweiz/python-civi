@@ -90,3 +90,5 @@ for member in members:
 
 reset_file.close()
 
+sys.exit(0)
+

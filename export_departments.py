@@ -31,4 +31,6 @@ for dep in sorted(deps.values(), key=get_number):
 			sys.stdout.write(deps[dep.parent].fullname + u',')
 		sys.stdout.write(dep.fullname + u'\n')
 		depnums.append(dep.number)
-	
+
+sys.exit(0)
+
