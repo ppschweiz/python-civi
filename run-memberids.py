@@ -19,7 +19,7 @@ api_key = os.environ['CIVI_API_KEY']
 url = os.environ['CIVI_API_URL'] 
 civicrm = CiviCRM(url, site_key, api_key, True)
 
-members = load_all(civicrm, 1, 200)
+members = load_all(civicrm, 1, 2000)
 assign_member_ids(members)
 
 sys.stderr.write('done\n')
