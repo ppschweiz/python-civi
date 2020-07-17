@@ -37,7 +37,7 @@ def load_memberlist():
 	return memberlist
 
 def load_allmembers():
-	allmembers = load_all(civicrm, 1, 2000, True)
+	allmembers = load_all(civicrm, 1, 200, True)
 	memberlist = list();
 	for member in allmembers:
 		if member.isppsmember and member.idserverstatus >= 1:
